@@ -86,29 +86,37 @@ Usage
 
 ### Interest Over Time
 
-    print_r( $gt->interestOverTime('Dublin') );
+    print_r($gt->interestOverTime('Dublin'));
 
 ### Related Queries
 
     # You can add up to 5 keywords
-    print_r( $gt->relatedQueries(['Dublin', 'Madrid', 'Paris']) );
+    print_r( $gt->relatedQueries(['Dublin', 'Madrid', 'Paris']));
 
 ### Trending Searches
 
     # p54 is Google's tricky and wired code for Ireland
-    print_r( $gt->trendingSearches('p54', date('Ymd')) );
+    print_r($gt->trendingSearches('p54', date('Ymd')));
 
-### Interest by Region
+### Interest by Subregion
 
-    # @TODO
+    # You can add up to 5 keywords
+    # Parameter $resolution (optional) for United States 'Subregion', 'Metro', 'City'
+    # Parameter $resolution (optional) for the rest of the countries 'Subregion', 'City' only
+    print_r($gt->relatedQueries(['Dublin'], 'City'));
+
 
 ### Top Charts
 
-    # @TODO
+    # Parameters
+    # date '201708' for September 2017
+    # cid (category id) only able to choose from those listed on https://www.google.com/trends/topcharts
+    print_r($gt->topCharts('201708', 'basketball_players'));
 
-### Suggestions
+### Suggestions Autocomplete
 
-    # @TODO
+    print_r($gt->suggestionsAutocomplete('toys'));
+
     
 ## Common API parameters
 
