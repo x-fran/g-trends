@@ -48,38 +48,36 @@ class GTrends
 
         $comparisonItem = [];
         foreach ($keyWordList as $kWord) {
+
             $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
         }
-
         $payload = [
             'hl' => $this->options['hl'],
             'tz' => $this->options['tz'],
             'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
         ];
-
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
         if ($data) {
 
             $widgetsArray = Json\Json::decode(trim(substr($data, 5)), true)['widgets'];
-
             $results = [];
             foreach ($widgetsArray as $widget) {
 
                 if ($widget['title'] == 'Related queries') {
-                    $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'];
-                    $relatedQueriesPayload['hl'] = $this->options['hl'];
-                    $relatedQueriesPayload['tz'] = $this->options['tz'];
-                    $relatedQueriesPayload['req'] = Json\Json::encode($widget['request']);
-                    $relatedQueriesPayload['token'] = $widget['token'];
 
-                    $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $relatedQueriesPayload);
+                    $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'];
+                    $relatedPayload['hl'] = $this->options['hl'];
+                    $relatedPayload['tz'] = $this->options['tz'];
+                    $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                    $relatedPayload['token'] = $widget['token'];
+                    $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
                     if ($data) {
 
                         $queriesArray = Json\Json::decode(trim(substr($data, 5)), true);
-
                         $results[$kWord] = $queriesArray;
 
                         if (count($keyWordList)>1) {
+
                             sleep($sleep);
                         }
                     } else {
