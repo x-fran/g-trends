@@ -33,6 +33,12 @@ print_r("\n\n <h1>GTrends relatedQueries</h1>\n ");
 print_r($gt->relatedQueries(['Dublin']));
 print_r("\n\n <h1>GTrends trendingSearches</h1>\n ");
 print_r($gt->trendingSearches('p54', date('Ymd')));
+print_r("\n\n <h1>GTrends topCharts</h1>\n ");
+print_r($gt->topCharts('201708', 'basketball_players'));
+print_r("\n\n <h1>GTrends interestBySubregion</h1>\n ");
+print_r($gt->interestBySubregion(['Dublin']));
+print_r("\n\n <h1>GTrends suggestionsAutocomplete</h1>\n ");
+print_r($gt->suggestionsAutocomplete('Dublin'));
 print_r("\n\n");
 
 ?>
