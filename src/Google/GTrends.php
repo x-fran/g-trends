@@ -51,6 +51,7 @@ class GTrends
 
             $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
         }
+
         $payload = [
             'hl' => $this->options['hl'],
             'tz' => $this->options['tz'],
