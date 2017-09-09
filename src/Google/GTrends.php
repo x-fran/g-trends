@@ -207,15 +207,15 @@ class GTrends
 
     /**
      * @param array $keyWordList
+     * @param string $resolution
      * @param int $category
      * @param string $time
      * @param string $property
-     * @param string $resolution
      * @param int $sleep
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $category=0, $time='now 1-H', $property='', $resolution='SUBREGION', $sleep=5)
+    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=5)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
