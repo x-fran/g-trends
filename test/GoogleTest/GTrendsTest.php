@@ -110,4 +110,34 @@ class GTrendsTest extends TestCase
 
         $this->assertEquals(is_array($trendingSearches), true);
     }
+
+    public function testIfTopChartsReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearches = $gt->topCharts('201708', 'basketball_players');
+
+        $this->assertEquals(is_array($trendingSearches), true);
+    }
+
+    public function testIfSuggestionsAutocompleteReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearches = $gt->suggestionsAutocomplete('Dublin');
+
+        $this->assertEquals(is_array($trendingSearches), true);
+    }
+
+    public function testIfInterestBySubregionReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearches = $gt->interestBySubregion(['Dublin']);
+
+        $this->assertEquals(is_array($trendingSearches), true);
+    }
 }
