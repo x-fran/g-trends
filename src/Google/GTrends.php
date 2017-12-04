@@ -15,6 +15,7 @@ class GTrends
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    const LATEST_STORIES = 'https://www.google.com/trends/api/stories/latest';
 
     protected $options = [
         'hl' => 'en-US',
@@ -94,13 +95,15 @@ class GTrends
         return false;
     }
 
-    /**
-     * @param $kWord
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @return array|bool
-     */
+	/**
+	 * @param        $kWord
+	 * @param int    $category
+	 * @param string $time
+	 * @param string $property
+	 *
+	 * @return array|bool
+	 * @throws \Exception
+	 */
     public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
     {
         $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
@@ -139,11 +142,13 @@ class GTrends
         return false;
     }
 
-    /**
-     * @param $country
-     * @param $date
-     * @return array|bool
-     */
+	/**
+	 * @param $country
+	 * @param $date
+	 *
+	 * @return array|bool
+	 * @throws \Exception
+	 */
     public function trendingSearches($country, $date)
     {
         $params = [
@@ -163,13 +168,15 @@ class GTrends
         }
     }
 
-    /**
-     * @param $date
-     * @param $cid
-     * @param string $geo
-     * @param string $cat
-     * @return array|bool
-     */
+	/**
+	 * @param        $date
+	 * @param        $cid
+	 * @param string $geo
+	 * @param string $cat
+	 *
+	 * @return array|bool
+	 * @throws \Exception
+	 */
     public function topCharts($date, $cid, $geo='US', $cat='')
     {
         $chartsPayload = [
@@ -188,10 +195,12 @@ class GTrends
         return false;
     }
 
-    /**
-     * @param $kWord
-     * @return array|bool
-     */
+	/**
+	 * @param $kWord
+	 *
+	 * @return array|bool
+	 * @throws \Exception
+	 */
     public function suggestionsAutocomplete($kWord)
     {
         $uri = self::SUGGESTIONS_URL . "/'$kWord'";
@@ -273,6 +282,34 @@ class GTrends
         }
 
         return false;
+    }
+
+	/**
+	 * @param string $country
+	 * @param string $cat
+	 * @param string $geo
+	 * @param int    $tz
+	 *
+	 * @return bool|mixed
+	 * @throws \Exception
+	 */
+	public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
+    {
+  		$params = [
+  			'hl' => $country,
+  			'cat' => $cat,
+  			'fi' => 15,
+  			'fs' => 15,
+  			'geo' => $geo,
+  			'ri' => 300,
+  			'rs' => 15,
+  			'tz' => $tz,
+  		];
+      $data = $this->_getData(self::LATEST_STORIES, 'GET', $params);
+      if ($data) {
+			     return Json\Json::decode(trim(substr($data, 4)), true);
+      }
+      return false;
     }
 
     /**
