@@ -116,21 +116,21 @@ class GTrends
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
         if ($data) {
 
-            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY)['widgets'];
+            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_OBJECT)->widgets;
 
             foreach ($widgetsArray as $widget) {
 
-                if ($widget['title'] == 'Interest over time') {
+                if ($widget->title == 'Interest over time') {
 
                     $interestOverTimePayload['hl'] = $this->options['hl'];
                     $interestOverTimePayload['tz'] = $this->options['tz'];
-                    $interestOverTimePayload['req'] = Json\Json::encode($widget['request']);
-                    $interestOverTimePayload['token'] = $widget['token'];
+                    $interestOverTimePayload['req'] = Json\Json::encode($widget->request);
+                    $interestOverTimePayload['token'] = $widget->token;
 
                     $data = $this->_getData(self::INTEREST_OVER_TIME_URL, 'GET', $interestOverTimePayload);
                     if ($data) {
 
-                        return Json\Json::decode(trim(substr($data, 5)), true)['default']['timelineData'];
+                        return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['default']['timelineData'];
                     } else {
 
                         return false;
