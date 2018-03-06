@@ -116,7 +116,7 @@ class GTrends
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
         if ($data) {
 
-            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), true)['widgets'];
+            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY)['widgets'];
 
             foreach ($widgetsArray as $widget) {
 
