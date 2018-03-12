@@ -2,12 +2,15 @@
 
 namespace GoogleTest;
 
-use Google\GTrends;
+use Doctrine\Common\Collections\ArrayCollection;
+use Google\Model\GTrends;
 use PHPUnit\Framework\TestCase;
 
 class GTrendsTest extends TestCase
 {
-    /* @var $gt GTrends */
+    /**
+     * @var GTrends
+     */
     public $gt;
 
     public function setUp()
@@ -17,15 +20,12 @@ class GTrendsTest extends TestCase
 
     public function testThatWeCanGetTheOptions()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
-
         $options = [
             'hl' => 'en-US',
             'tz' => 360,
             'geo' => 'US',
         ];
-        $gt->setOptions($options);
+        $this->gt->setOptions($options);
 
         $assertOptions = [
             'hl' => 'en-US',
@@ -35,119 +35,73 @@ class GTrendsTest extends TestCase
         $this->assertEquals($options, $assertOptions);
     }
 
-    public function testIfOptionsHasValidNumberOfKeys()
+    /**
+     * @throws \Exception
+     */
+    public function testIfRelatedQueriesReturnsArrayCollection()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $relatedQueries = $this->gt->relatedQueries(['Barcelona']);
 
-        $this->expectExceptionMessage('Invalid number of options provided');
-
-        $options = [
-            0 => 'US',
-            'hll' => 'en-US',
-            'tz' => 360,
-            'geo' => 'US',
-        ];
-        $gt->setOptions($options);
+        $this->assertEquals(true, $relatedQueries instanceof ArrayCollection);
     }
 
-    public function testIfOptionsHasValidKeys()
+    /**
+     * @throws \Exception
+     */
+    public function testIfInterestOverTimeReturnsArrayCollection()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $interestOverTime = $this->gt->interestOverTime('Barcelona');
 
-        $this->expectExceptionMessage('Invalid keys provided');
-
-        $options = [
-            'hll' => 'en-US',
-            'tz' => 360,
-            'geo' => 'US',
-        ];
-        $gt->setOptions($options);
+        $this->assertEquals(true, $interestOverTime instanceof ArrayCollection);
     }
 
-    public function testIfOptionsHasValidValues()
-    {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
-
-        $this->expectExceptionMessage('Invalid type values provided');
-
-        $options = [
-            'hl' => 'en-US',
-            'tz' => 'sd',
-            'geo' => 6546,
-        ];
-        $gt->setOptions($options);
-    }
-
-    public function testIfRelatedQueriesReturnsArray()
-    {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
-
-        $relatedQueries = $gt->relatedQueries(['Barcelona']);
-
-        $this->assertEquals(is_array($relatedQueries), true);
-    }
-
-    public function testIfInterestOverTimeReturnsArray()
-    {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
-
-        $interestOverTime = $gt->interestOverTime('Barcelona');
-
-        $this->assertEquals(is_array($interestOverTime), true);
-    }
-
+    /**
+     * @throws \Exception
+     */
     public function testIfTrendingSearchesReturnsArray()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $trendingSearches = $this->gt->trendingSearches('p54', date('Ymd'));
 
-        $trendingSearches = $gt->trendingSearches('p54', date('Ymd'));
-
-        $this->assertEquals(is_array($trendingSearches), true);
+        $this->assertEquals(true, is_array($trendingSearches));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testIfTopChartsReturnsArray()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $trendingSearches = $this->gt->topCharts('201708', 'basketball_players');
 
-        $trendingSearches = $gt->topCharts('201708', 'basketball_players');
-
-        $this->assertEquals(is_array($trendingSearches), true);
+        $this->assertEquals(true, is_array($trendingSearches));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testIfSuggestionsAutocompleteReturnsArray()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $trendingSearches = $this->gt->suggestionsAutocomplete('Dublin');
 
-        $trendingSearches = $gt->suggestionsAutocomplete('Dublin');
-
-        $this->assertEquals(is_array($trendingSearches), true);
+        $this->assertEquals(true, is_object($trendingSearches));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testIfInterestBySubregionReturnsArray()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $trendingSearches = $this->gt->interestBySubregion(['Dublin']);
 
-        $trendingSearches = $gt->interestBySubregion(['Dublin']);
-
-        $this->assertEquals(is_array($trendingSearches), true);
+        $this->assertEquals(true, is_array($trendingSearches));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testIfLatestStoriesReturnsArray()
     {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
+        $latestStories = $this->gt->latestStories();
 
-        $latestStories = $gt->latestStories();
-
-        $this->assertEquals(is_array($latestStories), true);
+        $this->assertEquals(true, is_object($latestStories));
     }
 }
