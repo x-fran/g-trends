@@ -1,6 +1,6 @@
 <?php
 
-namespace Google;
+namespace Google\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Google\Entity\Keyword;
@@ -53,7 +53,6 @@ class GTrends
     /**
      * GTrends constructor.
      * @param mixed[] $options
-     * @throws \Exception
      */
     public function __construct(array $options=[])
     {
@@ -80,7 +79,6 @@ class GTrends
     /**
      * @param mixed[] $options
      * @return self
-     * @throws \Exception
      */
     public function setOptions(array $options): self
     {
