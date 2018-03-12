@@ -3,6 +3,8 @@
 namespace Google;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Google\Entity\Keyword;
+use Google\Entity\Row;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
@@ -36,6 +38,12 @@ class GTrends
      * @var string
      */
     protected $geoLocation = '';
+
+    /**
+     * Time in seconds to sleep the process before doing a new request
+     * @var int
+     */
+    private $sleep = 5;
 
     /**
      * @var Client
@@ -96,11 +104,10 @@ class GTrends
      * @param int $category
      * @param string $time
      * @param string $property
-     * @param int $sleep
      * @return ArrayCollection
      * @throws \Exception
      */
-    public function relatedQueries(array $keyWordList, int $category=0, string $time='now 1-H', string $property='', int $sleep=5) : ArrayCollection
+    public function relatedQueries(array $keyWordList, int $category=0, string $time='now 1-H', string $property='') : ArrayCollection
     {
         $totalKeyWordList = count($keyWordList);
         if ($totalKeyWordList == 0 || $totalKeyWordList > 5) {
@@ -148,23 +155,22 @@ class GTrends
             $results->set($kWord, $queriesArray);
 
             if ($totalKeyWordList > 1) {
-                sleep($sleep);
+                sleep($this->sleep);
             }
         }
 
         return $results;
     }
 
-	/**
-	 * @param array|string $kWordList
-	 * @param int    $category
-	 * @param string $time
-	 * @param string $property
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
-    public function interestOverTime($kWordList, int $category=0, string $time='now 1-H', string $property='')
+    /**
+     * @param array|string $kWordList
+     * @param int    $category
+     * @param string $time
+     * @param string $property
+     * @return ArrayCollection
+     * @throws \Exception
+     */
+    public function interestOverTime($kWordList, int $category=0, string $time='now 1-H', string $property='') : ArrayCollection
     {
         if(is_string($kWordList)){
             $kWordList = [$kWordList];
@@ -187,33 +193,76 @@ class GTrends
             throw new \Exception('Invalid response, the given response does not contain a valid JSON');
         }
 
+        $results = new ArrayCollection();
         foreach ($object->widgets as $widget) {
 
-            if ($widget->title == 'Interest over time') {
-
-                $response = $this->client->get(self::INTEREST_OVER_TIME, [
-                    'query' => [
-                        'hl' => $this->language,
-                        'tz' => $this->timezone,
-                        'req' => json_encode($widget->request),
-                        'token' => $widget->token
-                    ]
-                ]);
-
-                $object = $this->decodeResponse($response);
-                return $object->default->timelineData;
+            if ($widget->title != 'Interest over time') {
+                continue;
             }
+
+            $this->prepareKeywordList($results, $widget->bullets);
+
+            $response = $this->client->get(self::INTEREST_OVER_TIME, [
+                'query' => [
+                    'hl' => $this->language,
+                    'tz' => $this->timezone,
+                    'req' => json_encode($widget->request),
+                    'token' => $widget->token
+                ]
+            ]);
+
+            $object = $this->decodeResponse($response);
+            $this->fillResponseValueRows($results, $widget->bullets, $object->default->timelineData);
+
+            return $results;
         }
 
-        throw new \Exception('Empty content');
+        return $results;
     }
 
-	/**
-	 * @param string $country
-	 * @param string $date
-	 * @return array
-	 * @throws \Exception
-	 */
+    /**
+     * @param ArrayCollection $collection
+     * @param array $rawList
+     * @param array $timeLineData
+     */
+    private function fillResponseValueRows(ArrayCollection $collection, array $rawList, array $timeLineData) : void
+    {
+        foreach ($timeLineData as $object){
+
+            foreach($object->value as $position => $value){
+
+                /* @var $keyword Keyword*/
+                $keyword = $collection->get($rawList[$position]->text);
+                $row = new Row($object->time, $value);
+
+                $keyword->addRow($row);
+
+            }
+        }
+    }
+
+    /**
+     * @param ArrayCollection $collection
+     * @param array $rawList
+     */
+    private function prepareKeywordList(ArrayCollection $collection, array $rawList) : void
+    {
+        foreach($rawList as $object){
+            if($collection->containsKey($object->text)){
+                continue;
+            }
+
+            $keyword = new Keyword($object->text);
+            $collection->set($keyword->getValue(), $keyword);
+        }
+    }
+
+    /**
+     * @param string $country
+     * @param string $date
+     * @return array
+     * @throws \Exception
+     */
     public function trendingSearches(string $country, string $date)
     {
         $response =  $this->client->post(self::TRENDING_SEARCHES_URL, [
@@ -231,15 +280,15 @@ class GTrends
         return json_decode($response->getBody(), true);
     }
 
-	/**
-	 * @param string $date
-	 * @param string $cid
-	 * @param string $geo
-	 * @param string $cat
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param string $date
+     * @param string $cid
+     * @param string $geo
+     * @param string $cat
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function topCharts(string $date, string $cid, string $geo='US', string $cat='')
     {
         $response = $this->client->get(self::TOP_CHARTS_URL, [
@@ -256,11 +305,11 @@ class GTrends
         return json_decode(trim($response->getBody()), true);
     }
 
-	/**
-	 * @param string $kWord
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param string $kWord
+     * @return array|bool
+     * @throws \Exception
+     */
     public function suggestionsAutocomplete(string $kWord)
     {
         $response = $this->client->get(self::SUGGESTIONS . "/'{$kWord}'", [
@@ -278,11 +327,10 @@ class GTrends
      * @param int $category
      * @param string $time
      * @param string $property
-     * @param int $sleep
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=5)
+    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='')
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
             throw new \Exception('Invalid number of items provided in keyWordList');
@@ -327,36 +375,36 @@ class GTrends
             $results[$kWord] = $this->decodeResponse($response);
 
             if (count($keyWordList)>1) {
-                sleep($sleep);
+                sleep($this->sleep);
             }
         }
 
         return $results;
     }
 
-	/**
-	 * @param string $country
-	 * @param string $cat
-	 * @param string $geo
-	 * @param int    $tz
-	 * @return bool|mixed
-	 */
-	public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
+    /**
+     * @param string $country
+     * @param string $cat
+     * @param string $geo
+     * @param int    $tz
+     * @return bool|mixed
+     */
+    public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
     {
-      $response = $this->client->get(self::LATEST_STORIES, [
-          'query' => [
-              'hl' => $country,
-              'cat' => $cat,
-              'fi' => 15,
-              'fs' => 15,
-              'geo' => $geo,
-              'ri' => 300,
-              'rs' => 15,
-              'tz' => $tz,
-          ]
-      ]);
+        $response = $this->client->get(self::LATEST_STORIES, [
+            'query' => [
+                'hl' => $country,
+                'cat' => $cat,
+                'fi' => 15,
+                'fs' => 15,
+                'geo' => $geo,
+                'ri' => 300,
+                'rs' => 15,
+                'tz' => $tz,
+            ]
+        ]);
 
-      return $this->decodeResponse($response, 4);
+        return $this->decodeResponse($response, 4);
     }
 
     /**
