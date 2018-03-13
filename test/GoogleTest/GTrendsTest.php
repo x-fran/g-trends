@@ -3,6 +3,7 @@
 namespace GoogleTest;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Google\Entity\Keyword;
 use Google\Model\GTrends;
 use PHPUnit\Framework\TestCase;
 
@@ -48,11 +49,30 @@ class GTrendsTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testIfInterestOverTimeReturnsArrayCollection()
+    public function testIfInterestOverTimeReturnKeyword()
     {
         $interestOverTime = $this->gt->interestOverTime('Barcelona');
 
+        $this->assertEquals(true, $interestOverTime instanceof Keyword);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testIfComparingInterestOverTimeReturnsArrayCollection()
+    {
+        $interestOverTime = $this->gt->comparingInterestOverTime(['Barcelona', 'Madrid', 'Petrer', 'Alicante', 'Valencia']);
+
         $this->assertEquals(true, $interestOverTime instanceof ArrayCollection);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testIfComparingInterestOverTimeThrowsException()
+    {
+        $this->expectException(\Exception::class);
+        $this->gt->comparingInterestOverTime(['Barcelona', 'Madrid', 'Petrer', 'Alicante', 'Valencia', 'Elda']);
     }
 
     /**
