@@ -22,7 +22,10 @@ class GTrends
     private const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     private const SUGGESTIONS = 'autocomplete';//https://trends.google.com/trends/api/
     private const INTEREST_BY_SUBREGION = 'widgetdata/comparedgeo';//https://trends.google.com/trends/api/
-    private const LATEST_STORIES = 'stories/latest';//https://trends.google.com/trends/api/
+    private const LATEST_STORIES = 'stories/latest';
+
+    private const MAX_KEYWORDS_COMPARING = 5;
+    private const MIN_KEYWORDS_COMPARING = 1;
 
     protected $language = 'en-US';
 
@@ -161,17 +164,32 @@ class GTrends
     }
 
     /**
-     * @param array|string $kWordList
+     * @param string $keyword
+     * @param int    $category
+     * @param string $time
+     * @param string $property
+     * @return Keyword
+     * @throws \Exception
+     */
+    public function interestOverTime(string $keyword, int $category=0, string $time='now 1-H', string $property='') : Keyword
+    {
+        return $this->comparingInterestOverTime([$keyword], $category, $time, $property)
+                        ->get($keyword);
+    }
+
+    /**
+     * @param string[] $kWordList
      * @param int    $category
      * @param string $time
      * @param string $property
      * @return ArrayCollection
      * @throws \Exception
      */
-    public function interestOverTime($kWordList, int $category=0, string $time='now 1-H', string $property='') : ArrayCollection
+    public function comparingInterestOverTime(array $kWordList, int $category=0, string $time='now 1-H', string $property='') : ArrayCollection
     {
-        if(is_string($kWordList)){
-            $kWordList = [$kWordList];
+        $count = count($kWordList);
+        if($count > self::MAX_KEYWORDS_COMPARING || $count < self::MIN_KEYWORDS_COMPARING){
+            throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
         $comparisonItem = [];
@@ -330,7 +348,8 @@ class GTrends
      */
     public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='')
     {
-        if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
+        $count = count($keyWordList);
+        if($count > self::MAX_KEYWORDS_COMPARING || $count < self::MIN_KEYWORDS_COMPARING){
             throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
