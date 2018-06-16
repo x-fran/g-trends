@@ -23,6 +23,11 @@ class GTrends
         'geo' => 'US',
     ];
 
+    /**
+     * GTrends constructor.
+     * @param array $options
+     * @throws \Exception
+     */
     public function __construct(array $options=[])
     {
         if ($options) {
@@ -61,7 +66,7 @@ class GTrends
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
         if ($data) {
 
-            $widgetsArray = Json\Json::decode(trim(substr($data, 5)), true)['widgets'];
+            $widgetsArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['widgets'];
             $results = [];
             foreach ($widgetsArray as $widget) {
 
@@ -75,7 +80,7 @@ class GTrends
                     $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
                     if ($data) {
 
-                        $queriesArray = Json\Json::decode(trim(substr($data, 5)), true);
+                        $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
                         $results[$kWord] = $queriesArray;
 
                         if (count($keyWordList)>1) {
@@ -95,15 +100,15 @@ class GTrends
         return false;
     }
 
-	/**
-	 * @param        $kWord
-	 * @param int    $category
-	 * @param string $time
-	 * @param string $property
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param        $kWord
+     * @param int    $category
+     * @param string $time
+     * @param string $property
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
     {
         $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
@@ -116,7 +121,7 @@ class GTrends
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
         if ($data) {
 
-            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), true)['widgets'];
+            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY)['widgets'];
 
             foreach ($widgetsArray as $widget) {
 
@@ -130,7 +135,7 @@ class GTrends
                     $data = $this->_getData(self::INTEREST_OVER_TIME_URL, 'GET', $interestOverTimePayload);
                     if ($data) {
 
-                        return Json\Json::decode(trim(substr($data, 5)), true)['default']['timelineData'];
+                        return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['default']['timelineData'];
                     } else {
 
                         return false;
@@ -142,13 +147,13 @@ class GTrends
         return false;
     }
 
-	/**
-	 * @param $country
-	 * @param $date
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param $country
+     * @param $date
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function trendingSearches($country, $date)
     {
         $params = [
@@ -161,22 +166,22 @@ class GTrends
         $data =  $this->_getData(self::TRENDING_SEARCHES_URL, 'POST', $params);
         if ($data) {
 
-            return Json\Json::decode($data, true);
+            return Json\Json::decode($data, Json\Json::TYPE_ARRAY);
         } else {
 
             return false;
         }
     }
 
-	/**
-	 * @param        $date
-	 * @param        $cid
-	 * @param string $geo
-	 * @param string $cat
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param        $date
+     * @param        $cid
+     * @param string $geo
+     * @param string $cat
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function topCharts($date, $cid, $geo='US', $cat='')
     {
         $chartsPayload = [
@@ -190,17 +195,17 @@ class GTrends
         $data = $this->_getData(self::TOP_CHARTS_URL, 'GET', $chartsPayload);
         if ($data) {
 
-            return Json\Json::decode(trim($data), true);
+            return Json\Json::decode(trim($data), Json\Json::TYPE_ARRAY);
         }
         return false;
     }
 
-	/**
-	 * @param $kWord
-	 *
-	 * @return array|bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param $kWord
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function suggestionsAutocomplete($kWord)
     {
         $uri = self::SUGGESTIONS_URL . "/'$kWord'";
@@ -208,7 +213,7 @@ class GTrends
         $data = $this->_getData($uri, 'GET', $param);
         if ($data) {
 
-            return Json\Json::decode(trim(substr($data, 5)), true);
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
         }
         return false;
     }
@@ -264,7 +269,7 @@ class GTrends
                     $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $interestBySubregionPayload);
                     if ($data) {
 
-                        $queriesArray = Json\Json::decode(trim(substr($data, 5)), true);
+                        $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
                         $results[$kWord] = $queriesArray;
 
                         if (count($keyWordList)>1) {
@@ -284,32 +289,32 @@ class GTrends
         return false;
     }
 
-	/**
-	 * @param string $country
-	 * @param string $cat
-	 * @param string $geo
-	 * @param int    $tz
-	 *
-	 * @return bool|mixed
-	 * @throws \Exception
-	 */
-	public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
+    /**
+     * @param string $country
+     * @param string $cat
+     * @param string $geo
+     * @param int    $tz
+     *
+     * @return bool|mixed
+     * @throws \Exception
+     */
+    public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
     {
-  		$params = [
-  			'hl' => $country,
-  			'cat' => $cat,
-  			'fi' => 15,
-  			'fs' => 15,
-  			'geo' => $geo,
-  			'ri' => 300,
-  			'rs' => 15,
-  			'tz' => $tz,
-  		];
-      $data = $this->_getData(self::LATEST_STORIES, 'GET', $params);
-      if ($data) {
-			     return Json\Json::decode(trim(substr($data, 4)), true);
-      }
-      return false;
+        $params = [
+            'hl' => $country,
+            'cat' => $cat,
+            'fi' => 15,
+            'fs' => 15,
+            'geo' => $geo,
+            'ri' => 300,
+            'rs' => 15,
+            'tz' => $tz,
+        ];
+        $data = $this->_getData(self::LATEST_STORIES, 'GET', $params);
+        if ($data) {
+            return Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY);
+        }
+        return false;
     }
 
     /**
@@ -358,8 +363,12 @@ class GTrends
         }
 
         $client = new Http\Client();
+        $cookieJar = tempnam('/tmp','cookie');
         $client->setOptions([
             'adapter' => Http\Client\Adapter\Curl::class,
+            'curloptions' => [
+                CURLOPT_COOKIEJAR => $cookieJar,
+            ],
             'maxredirects' => 10,
             'timeout' => 100]);
         $client->setUri($uri);
@@ -387,38 +396,32 @@ class GTrends
         }
 
         $client->send();
-        $statusCode = $client->getResponse()->getStatusCode();
+        $client->setOptions([
+            'curloptions' => [
+                CURLOPT_COOKIEFILE => $cookieJar,
+            ]]);
+        $client->send();
+        unlink($cookieJar);
 
+        $statusCode = $client->getResponse()->getStatusCode();
         if ($statusCode == 200) {
 
             $headers = $client->getResponse()->getHeaders()->toArray();
-            $getData = false;
             foreach ($headers as $header => $value) {
 
                 if ($header == 'Content-Type') {
 
                     if (
-                        stripos($value, 'application/json') !== false OR
-                        stripos($value, 'application/javascript') !== false OR
-                        stripos($value, 'text/javascript') !== false
+                        (stripos($value, 'application/json') !== false OR
+                            stripos($value, 'application/javascript') !== false OR
+                            stripos($value, 'text/javascript') !== false) AND $client->getResponse()->getBody()
                     ) {
 
-                        $getData = true;
-
-                        break;
+                        return $client->getResponse()->getBody();
                     }
                 }
             }
-
-            if ($getData) {
-
-                if ($body = $client->getResponse()->getBody()) {
-
-                    return $body;
-                }
-            }
         }
-
         return false;
     }
 }
