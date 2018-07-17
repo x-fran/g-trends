@@ -27,7 +27,7 @@ $gt = new GTrends();
 <?php
 
 print_r('<pre>');
-/*print_r("\n\n <h1>GTrends interestOverTime</h1>\n ");
+print_r("\n\n <h1>GTrends interestOverTime</h1>\n ");
 print_r($gt->interestOverTime('Dublin'));
 print_r("\n\n <h1>GTrends relatedQueries</h1>\n ");
 print_r($gt->relatedQueries(['Dublin']));
@@ -38,9 +38,7 @@ print_r($gt->topCharts('201708', 'basketball_players'));
 print_r("\n\n <h1>GTrends interestBySubregion</h1>\n ");
 print_r($gt->interestBySubregion(['Dublin']));
 print_r("\n\n <h1>GTrends suggestionsAutocomplete</h1>\n ");
-print_r($gt->suggestionsAutocomplete('Dublin'));*/
-print_r("\n\n <h1>GTrends latestStories</h1>\n ");
-print_r($gt->latestStories());
+print_r($gt->suggestionsAutocomplete('Dublin'));
 print_r("\n\n");
 
 ?>

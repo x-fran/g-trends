@@ -140,14 +140,4 @@ class GTrendsTest extends TestCase
 
         $this->assertEquals(is_array($trendingSearches), true);
     }
-
-    public function testIfLatestStoriesReturnsArray()
-    {
-        /* @var $gt GTrends */
-        $gt = $this->gt;
-
-        $latestStories = $gt->latestStories();
-
-        $this->assertEquals(is_array($latestStories), true);
-    }
 }
