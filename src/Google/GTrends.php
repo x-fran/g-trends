@@ -15,7 +15,6 @@ class GTrends
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
-    const LATEST_STORIES = 'https://www.google.com/trends/api/stories/latest';
 
     protected $options = [
         'hl' => 'en-US',
@@ -286,34 +285,6 @@ class GTrends
             return $results;
         }
 
-        return false;
-    }
-
-    /**
-     * @param string $country
-     * @param string $cat
-     * @param string $geo
-     * @param int    $tz
-     *
-     * @return bool|mixed
-     * @throws \Exception
-     */
-    public function latestStories($country='en-US', $cat='all', $geo='IE', $tz=-60)
-    {
-        $params = [
-            'hl' => $country,
-            'cat' => $cat,
-            'fi' => 15,
-            'fs' => 15,
-            'geo' => $geo,
-            'ri' => 300,
-            'rs' => 15,
-            'tz' => $tz,
-        ];
-        $data = $this->_getData(self::LATEST_STORIES, 'GET', $params);
-        if ($data) {
-            return Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY);
-        }
         return false;
     }
 
