@@ -111,6 +111,16 @@ class GTrendsTest extends TestCase
         $this->assertEquals(is_array($trendingSearches), true);
     }
 
+    public function testIfTrendingSearchesRealtimeReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearchesRealtime = $gt->trendingSearchesRealtime();
+
+        $this->assertEquals(is_array($trendingSearchesRealtime), true);
+    }
+
     public function testIfTopChartsReturnsArray()
     {
         /* @var $gt GTrends */
