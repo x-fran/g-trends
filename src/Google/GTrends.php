@@ -12,9 +12,11 @@ class GTrends
     const RELATED_QUERIES_URL = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
     const INTEREST_OVER_TIME_URL = 'https://trends.google.com/trends/api/widgetdata/multiline';
     const TRENDING_SEARCHES_URL = 'https://trends.google.com/trends/hottrends/hotItems';
+    const TRENDING_SEARCHES_REALTIME_URL = 'https://trends.google.com/trends/api/realtimetrends';
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    const CATEGORIES_URL = 'https://trends.google.com/trends/api/explore/pickers/category';
 
     protected $options = [
         'hl' => 'en-US',
@@ -172,6 +174,30 @@ class GTrends
         }
     }
 
+    public function trendingSearchesRealtime($cat='all', $fi=0, $fs=0, $ri=300, $rs=20, $sort=0)
+    {
+        $params =[
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'geo' => $this->options['geo'],
+            'cat' => $cat,
+            'fi' => $fi,
+            'fs' => $fs,
+            'ri' => $ri,
+            'rs' => $rs,
+            'sort' => $sort,
+        ];
+
+        $uri = self::TRENDING_SEARCHES_REALTIME_URL;
+        $data = $this->_getData($uri, 'GET', $params);
+
+        if ($data) {
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
+
+        return false;
+    }
+
     /**
      * @param        $date
      * @param        $cid
@@ -285,6 +311,22 @@ class GTrends
             return $results;
         }
 
+        return false;
+    }
+
+    /**
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function categories()
+    {
+        $uri = self::CATEGORIES_URL;
+        $param = ['hl' => $this->options['hl']];
+        $data = $this->_getData($uri, 'GET', $param);
+        if ($data) {
+
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
         return false;
     }
 
