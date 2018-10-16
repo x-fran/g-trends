@@ -15,6 +15,7 @@ class GTrends
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    const CATEGORIES_URL = 'https://trends.google.com/trends/api/explore/pickers/category';
 
     protected $options = [
         'hl' => 'en-US',
@@ -285,6 +286,22 @@ class GTrends
             return $results;
         }
 
+        return false;
+    }
+
+    /**
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function categories()
+    {
+        $uri = self::CATEGORIES_URL;
+        $param = ['hl' => $this->options['hl']];
+        $data = $this->_getData($uri, 'GET', $param);
+        if ($data) {
+
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
         return false;
     }
 
