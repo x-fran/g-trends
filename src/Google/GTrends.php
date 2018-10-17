@@ -253,16 +253,18 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=5)
+    public function interestBySubregion(array $keyWordList, $resolution='REGION', $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=5)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
             throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
+        $geo = $this->options['geo'] . (null === $subregion ? '' : '-'.strtoupper($subregion));
+
         $comparisonItem = [];
         foreach ($keyWordList as $kWord) {
-            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $geo, 'time' => $time];
         }
 
         $payload = [
@@ -278,14 +280,11 @@ class GTrends
 
             $results = [];
             foreach ($widgetsArray as $widget) {
-
-                if ($widget['title'] == 'Interest by subregion') {
-
+                if ($widget['id'] === 'GEO_MAP') {
                     $kWord = $widget['bullet'];
-                    if (!$this->options['geo']) {
 
-                        $widget['request']['resolution'] = ucfirst(strtolower($resolution));
-                    }
+                    $widget['request']['resolution'] = strtoupper($resolution);
+
                     $interestBySubregionPayload['hl'] = $this->options['hl'];
                     $interestBySubregionPayload['tz'] = $this->options['tz'];
                     $interestBySubregionPayload['req'] = Json\Json::encode($widget['request']);
@@ -293,8 +292,8 @@ class GTrends
 
                     $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $interestBySubregionPayload);
                     if ($data) {
-
                         $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+
                         $results[$kWord] = $queriesArray;
 
                         if (count($keyWordList)>1) {
