@@ -131,6 +131,16 @@ class GTrendsTest extends TestCase
         $this->assertEquals(is_array($trendingSearches), true);
     }
 
+    public function testIfTopChartsCategoriesReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $topChartsCategories = $gt->topChartsCategories('2017');
+
+        $this->assertEquals(is_array($topChartsCategories), true);
+    }
+
     public function testIfSuggestionsAutocompleteReturnsArray()
     {
         /* @var $gt GTrends */
