@@ -14,6 +14,7 @@ class GTrends
     const TRENDING_SEARCHES_URL = 'https://trends.google.com/trends/hottrends/hotItems';
     const TRENDING_SEARCHES_REALTIME_URL = 'https://trends.google.com/trends/api/realtimetrends';
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
+    const TOP_CHARTS_CATEGORY_URL = 'https://trends.google.com/trends/topcharts/category';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
     const CATEGORIES_URL = 'https://trends.google.com/trends/api/explore/pickers/category';
@@ -223,6 +224,30 @@ class GTrends
             return Json\Json::decode(trim($data), Json\Json::TYPE_ARRAY);
         }
         return false;
+    }
+
+    /**
+     * @param $date
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function topChartsCategories($date, $geo=null)
+    {
+        $params = [
+            'ajax' => '1',
+            'date' => $date,
+            'geo' => $geo ?? $this->options['geo'],
+            'cid' => '',
+        ];
+        $data =  $this->_getData(self::TOP_CHARTS_CATEGORY_URL, 'POST', $params);
+        if ($data) {
+
+            return Json\Json::decode($data, Json\Json::TYPE_ARRAY);
+        } else {
+
+            return false;
+        }
     }
 
     /**
