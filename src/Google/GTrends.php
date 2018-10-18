@@ -111,6 +111,51 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
+    public function relatedTopics($kWord, $category=0, $time='today 12-m', $property='')
+    {
+        $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+        $payload = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
+        ];
+
+        $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
+        if ($data) {
+
+            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY)['widgets'];
+
+            foreach ($widgetsArray as $widget) {
+                if ($widget['id'] === 'RELATED_TOPICS') {
+                    $relatedPayload['hl'] = $this->options['hl'];
+                    $relatedPayload['tz'] = $this->options['tz'];
+                    $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                    $relatedPayload['token'] = $widget['token'];
+
+                    $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                    if ($data) {
+
+                        return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+                    } else {
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param        $kWord
+     * @param int    $category
+     * @param string $time
+     * @param string $property
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
     public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
     {
         $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
