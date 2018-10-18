@@ -425,6 +425,21 @@ class GTrends
     }
 
     /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByMetro(array $keyWordList, $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep, $subregion);
+    }
+
+    /**
      * @return array|bool
      * @throws \Exception
      */
