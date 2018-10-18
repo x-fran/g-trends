@@ -47,7 +47,7 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function relatedQueries(array $keyWordList, $category=0, $time='now 1-H', $property='', $sleep=5)
+    public function relatedQueries(array $keyWordList, $category=0, $time='now 1-H', $property='', $sleep=0.5)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
@@ -323,7 +323,7 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $resolution='REGION', $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=5)
+    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=0.5, $subregion=null)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
@@ -350,8 +350,8 @@ class GTrends
 
             $results = [];
             foreach ($widgetsArray as $widget) {
-                if ($widget['id'] === 'GEO_MAP') {
-                    $kWord = $widget['bullet'];
+
+                if (strpos($widget['id'], 'GEO_MAP') === 0) {
 
                     $widget['request']['resolution'] = strtoupper($resolution);
 
@@ -362,13 +362,18 @@ class GTrends
 
                     $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $interestBySubregionPayload);
                     if ($data) {
+
                         $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
 
-                        $results[$kWord] = $queriesArray;
+                        if (isset($widget['bullets'])) {
+                            $queriesArray['bullets'] = $widget['bullets'];
+                        }
+
+                        $results[$widget['bullet'] ?? ''] = $queriesArray;
 
                         if (count($keyWordList)>1) {
 
-                            sleep($sleep);
+                            usleep($sleep * 1000 * 1000);
                         }
                     } else {
 
