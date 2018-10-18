@@ -389,6 +389,35 @@ class GTrends
     }
 
     /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByCity(array $keyWordList, $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep, $subregion);
+    }
+
+    /**
      * @return array|bool
      * @throws \Exception
      */
