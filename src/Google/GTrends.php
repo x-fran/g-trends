@@ -323,7 +323,7 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=0.5, $subregion=null)
+    private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-H', $property='', $sleep=0.5, $subregion=null)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
@@ -386,6 +386,57 @@ class GTrends
         }
 
         return false;
+    }
+
+    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        $resolution = strcasecmp('SUBREGION', $resolution) === 0 ? 'REGION' : $resolution;
+
+        return $this->_interestBySubregion($keyWordList, $resolution, $category, $time, $property, $sleep);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByCity(array $keyWordList, $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep, $subregion);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByMetro(array $keyWordList, $subregion=null, $category=0, $time='now 1-H', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep, $subregion);
     }
 
     /**
