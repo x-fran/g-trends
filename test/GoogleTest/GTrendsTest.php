@@ -91,6 +91,16 @@ class GTrendsTest extends TestCase
         $this->assertEquals(is_array($relatedQueries), true);
     }
 
+    public function testIfRelatedTopicsReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $relatedTopics = $gt->relatedTopics('Restaurants');
+
+        $this->assertEquals(is_array($relatedTopics), true);
+    }
+
     public function testIfInterestOverTimeReturnsArray()
     {
         /* @var $gt GTrends */
