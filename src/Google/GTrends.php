@@ -201,6 +201,142 @@ class GTrends
         return $this->_relatedTopics(null, $category, $time, $property);
     }
 
+    public function explore($keyWordList, $category=0, $time='today 12-m', $property='', array $widgetIds = ['*'], $sleep=0.5)
+    {
+        if (null !== $keyWordList && ! is_array($keyWordList)) {
+            $keyWordList = [$keyWordList];
+        }
+
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeInfo[1] = strtolower($timeInfo[1]);
+        $time = implode('-', $timeInfo);
+
+        if (null === $keyWordList) {
+            $comparisonItem[] = ['geo' => $this->options['geo'], 'time' => $time];
+        } else {
+            if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
+
+                throw new \Exception('Invalid number of items provided in keyWordList');
+            }
+
+            $comparisonItem = [];
+            foreach ($keyWordList as $kWord) {
+
+                $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+            }
+        }
+
+        $payload = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
+        ];
+
+        $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
+
+        if (! $data) {
+
+            return false;
+        }
+
+        $widgetsArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['widgets'];
+        $results = [];
+        foreach ($widgetsArray as $widget) {
+
+            $widgetEnabled = false !== array_search('*', $widgetIds) || in_array($widget['id'], $widgetIds, true);
+
+            if (! $widgetEnabled) {
+
+                continue;
+            }
+
+            if ($widget['id'] === 'TIMESERIES') {
+                $interestOverTimePayload['hl'] = $this->options['hl'];
+                $interestOverTimePayload['tz'] = $this->options['tz'];
+                $interestOverTimePayload['req'] = Json\Json::encode($widget['request']);
+                $interestOverTimePayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::INTEREST_OVER_TIME_URL, 'GET', $interestOverTimePayload);
+                if ($data) {
+
+                    $results['TIMESERIES'] = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['default']['timelineData'];
+                } else {
+
+                    $results['TIMESERIES'] = false;
+                }
+            }
+
+            if (strpos($widget['id'], 'GEO_MAP') === 0) {
+
+                $interestBySubregionPayload['hl'] = $this->options['hl'];
+                $interestBySubregionPayload['tz'] = $this->options['tz'];
+                $interestBySubregionPayload['req'] = Json\Json::encode($widget['request']);
+                $interestBySubregionPayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $interestBySubregionPayload);
+                if ($data) {
+
+                    $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+
+                    if (isset($widget['bullets'])) {
+                        $queriesArray['bullets'] = $widget['bullets'];
+                    }
+
+                    $results['GEO_MAP'][$widget['bullet'] ?? ''] = $queriesArray;
+                } else {
+
+                    $results['GEO_MAP'] = false;
+                }
+            }
+
+            if ($widget['id'] === 'RELATED_QUERIES') {
+
+                $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'] ?? null;
+                $relatedPayload['hl'] = $this->options['hl'];
+                $relatedPayload['tz'] = $this->options['tz'];
+                $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                $relatedPayload['token'] = $widget['token'];
+                $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                if ($data) {
+
+                    $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+
+                    if (null === $kWord || count($keyWordList) === 1) {
+
+                        $results['RELATED_QUERIES'] = $queriesArray;
+                    } else {
+
+                        $results['RELATED_QUERIES'][$kWord] = $queriesArray;
+                    }
+                } else {
+
+                    $results['RELATED_QUERIES'] = false;
+                }
+            }
+
+            if ($widget['id'] === 'RELATED_TOPICS') {
+                $relatedPayload['hl'] = $this->options['hl'];
+                $relatedPayload['tz'] = $this->options['tz'];
+                $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                $relatedPayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                if ($data) {
+
+                    $results['RELATED_TOPICS'] = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+                } else {
+
+                    $results['RELATED_TOPICS'] = false;
+                }
+            }
+
+            usleep($sleep * 1000 * 1000);
+        }
+
+        return $results;
+    }
+
     /**
      * @param        $kWord
      * @param int    $category
