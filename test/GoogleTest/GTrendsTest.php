@@ -91,6 +91,16 @@ class GTrendsTest extends TestCase
         $this->assertEquals(is_array($relatedQueries), true);
     }
 
+    public function testIfRelatedTopicsReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $relatedTopics = $gt->relatedTopics('Restaurants');
+
+        $this->assertEquals(is_array($relatedTopics), true);
+    }
+
     public function testIfInterestOverTimeReturnsArray()
     {
         /* @var $gt GTrends */
@@ -111,6 +121,16 @@ class GTrendsTest extends TestCase
         $this->assertEquals(is_array($trendingSearches), true);
     }
 
+    public function testIfTrendingSearchesRealtimeReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearchesRealtime = $gt->trendingSearchesRealtime();
+
+        $this->assertEquals(is_array($trendingSearchesRealtime), true);
+    }
+
     public function testIfTopChartsReturnsArray()
     {
         /* @var $gt GTrends */
@@ -119,6 +139,16 @@ class GTrendsTest extends TestCase
         $trendingSearches = $gt->topCharts('201708', 'basketball_players');
 
         $this->assertEquals(is_array($trendingSearches), true);
+    }
+
+    public function testIfTopChartsCategoriesReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $topChartsCategories = $gt->topChartsCategories('2017');
+
+        $this->assertEquals(is_array($topChartsCategories), true);
     }
 
     public function testIfSuggestionsAutocompleteReturnsArray()
@@ -137,6 +167,16 @@ class GTrendsTest extends TestCase
         $gt = $this->gt;
 
         $trendingSearches = $gt->interestBySubregion(['Dublin']);
+
+        $this->assertEquals(is_array($trendingSearches), true);
+    }
+
+    public function testIfCategoriesReturnsArray()
+    {
+        /* @var $gt GTrends */
+        $gt = $this->gt;
+
+        $trendingSearches = $gt->categories();
 
         $this->assertEquals(is_array($trendingSearches), true);
     }

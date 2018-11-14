@@ -12,9 +12,12 @@ class GTrends
     const RELATED_QUERIES_URL = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
     const INTEREST_OVER_TIME_URL = 'https://trends.google.com/trends/api/widgetdata/multiline';
     const TRENDING_SEARCHES_URL = 'https://trends.google.com/trends/hottrends/hotItems';
+    const TRENDING_SEARCHES_REALTIME_URL = 'https://trends.google.com/trends/api/realtimetrends';
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
+    const TOP_CHARTS_CATEGORY_URL = 'https://trends.google.com/trends/topcharts/category';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
     const INTEREST_BY_SUBREGION_URL = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    const CATEGORIES_URL = 'https://trends.google.com/trends/api/explore/pickers/category';
 
     protected $options = [
         'hl' => 'en-US',
@@ -44,17 +47,30 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function relatedQueries(array $keyWordList, $category=0, $time='now 1-H', $property='', $sleep=5)
+    private function _relatedQueries($keyWordList, $category=0, $time='today 12-m', $property='', $sleep=0.5)
     {
-        if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
-
-            throw new \Exception('Invalid number of items provided in keyWordList');
+        if (null !== $keyWordList && ! is_array($keyWordList)) {
+            throw new \InvalidArgumentException('Keyword list must be null or an array');
         }
 
-        $comparisonItem = [];
-        foreach ($keyWordList as $kWord) {
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeInfo[1] = strtolower($timeInfo[1]);
+        $time = implode('-', $timeInfo);
 
-            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+        if (null === $keyWordList) {
+            $comparisonItem[] = ['geo' => $this->options['geo'], 'time' => $time];
+        } else {
+            if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
+
+                throw new \Exception('Invalid number of items provided in keyWordList');
+            }
+
+            $comparisonItem = [];
+            foreach ($keyWordList as $kWord) {
+
+                $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+            }
         }
 
         $payload = [
@@ -62,16 +78,18 @@ class GTrends
             'tz' => $this->options['tz'],
             'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
         ];
+
         $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
+
         if ($data) {
 
             $widgetsArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['widgets'];
             $results = [];
             foreach ($widgetsArray as $widget) {
 
-                if ($widget['title'] == 'Related queries') {
+                if ($widget['id'] === 'RELATED_QUERIES') {
 
-                    $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'];
+                    $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'] ?? null;
                     $relatedPayload['hl'] = $this->options['hl'];
                     $relatedPayload['tz'] = $this->options['tz'];
                     $relatedPayload['req'] = Json\Json::encode($widget['request']);
@@ -80,7 +98,12 @@ class GTrends
                     if ($data) {
 
                         $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
-                        $results[$kWord] = $queriesArray;
+
+                        if (null === $kWord) {
+                            $results = $queriesArray;
+                        } else {
+                            $results[$kWord] = $queriesArray;
+                        }
 
                         if (count($keyWordList)>1) {
 
@@ -99,6 +122,16 @@ class GTrends
         return false;
     }
 
+    public function relatedQueries(array $keyWordList, $category=0, $time='today 12-m', $property='', $sleep=0.5)
+    {
+        return $this->_relatedQueries($keyWordList, $category, $time, $property, $sleep);
+    }
+
+    public function searchQueries($category=0, $time='today 12-m', $property='', $sleep=0.5)
+    {
+        return $this->_relatedQueries(null, $category, $time, $property, $sleep);
+    }
+
     /**
      * @param        $kWord
      * @param int    $category
@@ -108,8 +141,219 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
+    private function _relatedTopics($kWord, $category=0, $time='today 12-m', $property='')
     {
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeInfo[1] = strtolower($timeInfo[1]);
+        $time = implode('-', $timeInfo);
+
+        if (null === $kWord) {
+            $comparisonItem[] = ['geo' => $this->options['geo'], 'time' => $time];
+        } else {
+            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+        }
+
+        $payload = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
+        ];
+
+        $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
+        if ($data) {
+
+            $widgetsArray = Json\Json::decode(trim(substr($data, 4)), Json\Json::TYPE_ARRAY)['widgets'];
+
+            foreach ($widgetsArray as $widget) {
+                if ($widget['id'] === 'RELATED_TOPICS') {
+                    $relatedPayload['hl'] = $this->options['hl'];
+                    $relatedPayload['tz'] = $this->options['tz'];
+                    $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                    $relatedPayload['token'] = $widget['token'];
+
+                    $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                    if ($data) {
+
+                        return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+                    } else {
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function relatedTopics($kWord, $category=0, $time='today 12-m', $property='')
+    {
+        if (strlen(trim($kWord)) === 0) {
+            throw new \InvalidArgumentException('Keyword must not be empty');
+        }
+
+        return $this->_relatedTopics($kWord, $category, $time, $property);
+    }
+
+    public function searchTopics($category=0, $time='today 12-m', $property='')
+    {
+        return $this->_relatedTopics(null, $category, $time, $property);
+    }
+
+    public function explore($keyWordList, $category=0, $time='today 12-m', $property='', array $widgetIds = ['*'], $sleep=0.5)
+    {
+        if (null !== $keyWordList && ! is_array($keyWordList)) {
+            $keyWordList = [$keyWordList];
+        }
+
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeInfo[1] = strtolower($timeInfo[1]);
+        $time = implode('-', $timeInfo);
+
+        if (null === $keyWordList) {
+            $comparisonItem[] = ['geo' => $this->options['geo'], 'time' => $time];
+        } else {
+            if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
+
+                throw new \Exception('Invalid number of items provided in keyWordList');
+            }
+
+            $comparisonItem = [];
+            foreach ($keyWordList as $kWord) {
+
+                $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+            }
+        }
+
+        $payload = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
+        ];
+
+        $data = $this->_getData(self::GENERAL_URL, 'GET', $payload);
+
+        if (! $data) {
+
+            return false;
+        }
+
+        $widgetsArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['widgets'];
+        $results = [];
+        foreach ($widgetsArray as $widget) {
+
+            $widgetEnabled = false !== array_search('*', $widgetIds) || in_array($widget['id'], $widgetIds, true);
+
+            if (! $widgetEnabled) {
+
+                continue;
+            }
+
+            if ($widget['id'] === 'TIMESERIES') {
+                $interestOverTimePayload['hl'] = $this->options['hl'];
+                $interestOverTimePayload['tz'] = $this->options['tz'];
+                $interestOverTimePayload['req'] = Json\Json::encode($widget['request']);
+                $interestOverTimePayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::INTEREST_OVER_TIME_URL, 'GET', $interestOverTimePayload);
+                if ($data) {
+
+                    $results['TIMESERIES'] = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['default']['timelineData'];
+                } else {
+
+                    $results['TIMESERIES'] = false;
+                }
+            }
+
+            if (strpos($widget['id'], 'GEO_MAP') === 0) {
+
+                $interestBySubregionPayload['hl'] = $this->options['hl'];
+                $interestBySubregionPayload['tz'] = $this->options['tz'];
+                $interestBySubregionPayload['req'] = Json\Json::encode($widget['request']);
+                $interestBySubregionPayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::INTEREST_BY_SUBREGION_URL, 'GET', $interestBySubregionPayload);
+                if ($data) {
+
+                    $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+
+                    if (isset($widget['bullets'])) {
+                        $queriesArray['bullets'] = $widget['bullets'];
+                    }
+
+                    $results['GEO_MAP'][$widget['bullet'] ?? ''] = $queriesArray;
+                } else {
+
+                    $results['GEO_MAP'] = false;
+                }
+            }
+
+            if ($widget['id'] === 'RELATED_QUERIES') {
+
+                $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'] ?? null;
+                $relatedPayload['hl'] = $this->options['hl'];
+                $relatedPayload['tz'] = $this->options['tz'];
+                $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                $relatedPayload['token'] = $widget['token'];
+                $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                if ($data) {
+
+                    $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+
+                    if (null === $kWord || count($keyWordList) === 1) {
+
+                        $results['RELATED_QUERIES'] = $queriesArray;
+                    } else {
+
+                        $results['RELATED_QUERIES'][$kWord] = $queriesArray;
+                    }
+                } else {
+
+                    $results['RELATED_QUERIES'] = false;
+                }
+            }
+
+            if ($widget['id'] === 'RELATED_TOPICS') {
+                $relatedPayload['hl'] = $this->options['hl'];
+                $relatedPayload['tz'] = $this->options['tz'];
+                $relatedPayload['req'] = Json\Json::encode($widget['request']);
+                $relatedPayload['token'] = $widget['token'];
+
+                $data = $this->_getData(self::RELATED_QUERIES_URL, 'GET', $relatedPayload);
+                if ($data) {
+
+                    $results['RELATED_TOPICS'] = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+                } else {
+
+                    $results['RELATED_TOPICS'] = false;
+                }
+            }
+
+            usleep($sleep * 1000 * 1000);
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param        $kWord
+     * @param int    $category
+     * @param string $time
+     * @param string $property
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestOverTime($kWord, $category=0, $time='now 1-h', $property='')
+    {
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeUnit = array_pop($timeInfo);
+        $timeInfo[] = strtoupper($timeUnit);
+        $time = implode('-', $timeInfo);
+
         $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
         $payload = [
             'hl' => $this->options['hl'],
@@ -172,6 +416,30 @@ class GTrends
         }
     }
 
+    public function trendingSearchesRealtime($cat='all', $fi=0, $fs=0, $ri=300, $rs=20, $sort=0)
+    {
+        $params =[
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'geo' => $this->options['geo'],
+            'cat' => $cat,
+            'fi' => $fi,
+            'fs' => $fs,
+            'ri' => $ri,
+            'rs' => $rs,
+            'sort' => $sort,
+        ];
+
+        $uri = self::TRENDING_SEARCHES_REALTIME_URL;
+        $data = $this->_getData($uri, 'GET', $params);
+
+        if ($data) {
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
+
+        return false;
+    }
+
     /**
      * @param        $date
      * @param        $cid
@@ -197,6 +465,30 @@ class GTrends
             return Json\Json::decode(trim($data), Json\Json::TYPE_ARRAY);
         }
         return false;
+    }
+
+    /**
+     * @param $date
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function topChartsCategories($date, $geo=null)
+    {
+        $params = [
+            'ajax' => '1',
+            'date' => $date,
+            'geo' => $geo ?? $this->options['geo'],
+            'cid' => '',
+        ];
+        $data =  $this->_getData(self::TOP_CHARTS_CATEGORY_URL, 'POST', $params);
+        if ($data) {
+
+            return Json\Json::decode($data, Json\Json::TYPE_ARRAY);
+        } else {
+
+            return false;
+        }
     }
 
     /**
@@ -227,16 +519,24 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-H', $property='', $sleep=5)
+    private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-h', $property='', $sleep=0.5, $subregion=null)
     {
         if (count($keyWordList) == 0 OR count($keyWordList) > 5) {
 
             throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
+        $geo = $this->options['geo'] . (null === $subregion ? '' : '-'.strtoupper($subregion));
+
+        $timeInfo = explode('-', $time);
+        $timeInfo[0] = strtolower($timeInfo[0]);
+        $timeUnit = array_pop($timeInfo);
+        $timeInfo[] = strtoupper($timeUnit);
+        $time = implode('-', $timeInfo);
+
         $comparisonItem = [];
         foreach ($keyWordList as $kWord) {
-            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
+            $comparisonItem[] = ['keyword' => $kWord, 'geo' => $geo, 'time' => $time];
         }
 
         $payload = [
@@ -253,13 +553,10 @@ class GTrends
             $results = [];
             foreach ($widgetsArray as $widget) {
 
-                if ($widget['title'] == 'Interest by subregion') {
+                if (strpos($widget['id'], 'GEO_MAP') === 0) {
 
-                    $kWord = $widget['bullet'];
-                    if (!$this->options['geo']) {
+                    $widget['request']['resolution'] = strtoupper($resolution);
 
-                        $widget['request']['resolution'] = ucfirst(strtolower($resolution));
-                    }
                     $interestBySubregionPayload['hl'] = $this->options['hl'];
                     $interestBySubregionPayload['tz'] = $this->options['tz'];
                     $interestBySubregionPayload['req'] = Json\Json::encode($widget['request']);
@@ -269,11 +566,16 @@ class GTrends
                     if ($data) {
 
                         $queriesArray = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
-                        $results[$kWord] = $queriesArray;
+
+                        if (isset($widget['bullets'])) {
+                            $queriesArray['bullets'] = $widget['bullets'];
+                        }
+
+                        $results[$widget['bullet'] ?? ''] = $queriesArray;
 
                         if (count($keyWordList)>1) {
 
-                            sleep($sleep);
+                            usleep($sleep * 1000 * 1000);
                         }
                     } else {
 
@@ -285,6 +587,73 @@ class GTrends
             return $results;
         }
 
+        return false;
+    }
+
+    public function interestBySubregion(array $keyWordList, $resolution='SUBREGION', $category=0, $time='now 1-h', $property='', $sleep=0.5)
+    {
+        $resolution = strcasecmp('SUBREGION', $resolution) === 0 ? 'REGION' : $resolution;
+
+        return $this->_interestBySubregion($keyWordList, $resolution, $category, $time, $property, $sleep);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByCity(array $keyWordList, $subregion=null, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep, $subregion);
+    }
+
+    /**
+     * @param array $keyWordList
+     * @param null $subregion
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param int $sleep
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function interestByMetro(array $keyWordList, $subregion=null, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+    {
+        return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep, $subregion);
+    }
+
+    /**
+     * @return array|bool
+     * @throws \Exception
+     */
+    public function categories()
+    {
+        $uri = self::CATEGORIES_URL;
+        $param = ['hl' => $this->options['hl']];
+        $data = $this->_getData($uri, 'GET', $param);
+        if ($data) {
+
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
         return false;
     }
 
