@@ -13,6 +13,7 @@ class GTrends
     const INTEREST_OVER_TIME_URL = 'https://trends.google.com/trends/api/widgetdata/multiline';
     const TRENDING_SEARCHES_URL = 'https://trends.google.com/trends/hottrends/hotItems';
     const TRENDING_SEARCHES_REALTIME_URL = 'https://trends.google.com/trends/api/realtimetrends';
+    const DAILY_TRENDS_URL = 'https://trends.google.com/trends/api/dailytrends';
     const TOP_CHARTS_URL = 'https://trends.google.com/trends/topcharts/chart';
     const TOP_CHARTS_CATEGORY_URL = 'https://trends.google.com/trends/topcharts/category';
     const SUGGESTIONS_URL = 'https://trends.google.com/trends/api/autocomplete';
@@ -431,6 +432,25 @@ class GTrends
         ];
 
         $uri = self::TRENDING_SEARCHES_REALTIME_URL;
+        $data = $this->_getData($uri, 'GET', $params);
+
+        if ($data) {
+            return Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY);
+        }
+
+        return false;
+    }
+
+    public function dailyTrends($day = null)
+    {
+        $params = array_filter([
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'ed' => $day === date('Ymd') ? null : $day,
+            'geo' => $this->options['geo'],
+        ]);
+
+        $uri = self::DAILY_TRENDS_URL;
         $data = $this->_getData($uri, 'GET', $params);
 
         if ($data) {
