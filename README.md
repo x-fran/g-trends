@@ -105,14 +105,6 @@ Usage
     # Parameter $resolution (optional) for the rest of the countries 'Subregion', 'City' only
     print_r($gt->relatedQueries(['Dublin'], 'City'));
 
-
-### Top Charts
-
-    # Parameters
-    # date '201708' for September 2017
-    # cid (category id) only able to choose from those listed on https://www.google.com/trends/topcharts
-    print_r($gt->topCharts('201708', 'basketball_players'));
-
 ### Suggestions Autocomplete
 
     print_r($gt->suggestionsAutocomplete('toys'));
