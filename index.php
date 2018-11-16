@@ -3,8 +3,13 @@
 require 'vendor/autoload.php';
 
 use Google\GTrends;
-
-$gt = new GTrends();
+$options = [
+    'hl' => 'en-US',
+    'tz' => -60,
+    'geo' => 'IE',
+];
+/** @var Google\GTrends $gt */
+$gt = new GTrends($options);
 ?>
 <!doctype html>
 
@@ -27,18 +32,45 @@ $gt = new GTrends();
 <?php
 
 print_r('<pre>');
+
+print_r("\n\n <h1>GTrends getDailySearchTrends</h1>\n ");
+# print_r($gt->getDailySearchTrends());
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends getRealTimeSearchTrends</h1>\n ");
+# print_r($gt->getRealTimeSearchTrends());
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends getRelatedSearchQueries</h1>\n ");
+# print_r($gt->getRelatedSearchQueries(['Donald Trump']));
+print_r("\n\n");
+
 print_r("\n\n <h1>GTrends interestOverTime</h1>\n ");
-print_r($gt->interestOverTime('Dublin'));
-print_r("\n\n <h1>GTrends relatedQueries</h1>\n ");
-print_r($gt->relatedQueries(['Dublin']));
-print_r("\n\n <h1>GTrends trendingSearches</h1>\n ");
-print_r($gt->trendingSearches('p54', date('Ymd')));
-print_r("\n\n <h1>GTrends topCharts</h1>\n ");
-print_r($gt->topCharts('201708', 'basketball_players'));
+# print_r($gt->interestOverTime('Donald Trump'));
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends getRelatedTopics</h1>\n ");
+# print_r($gt->getRelatedTopics('Donald Trump'));
+print_r("\n\n");
+
 print_r("\n\n <h1>GTrends interestBySubregion</h1>\n ");
-print_r($gt->interestBySubregion(['Dublin']));
+# print_r($gt->interestBySubregion(['Dublin']));
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends interestByCity</h1>\n ");
+# print_r($gt->interestByCity(['Dublin']));
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends interestByMetro</h1>\n ");
+# print_r($gt->interestByMetro(['Dublin']));
+print_r("\n\n");
+
 print_r("\n\n <h1>GTrends suggestionsAutocomplete</h1>\n ");
-print_r($gt->suggestionsAutocomplete('Dublin'));
+# print_r($gt->suggestionsAutocomplete('Donald Trump'));
+print_r("\n\n");
+
+print_r("\n\n <h1>GTrends suggestionsAutocomplete</h1>\n ");
+# print_r($gt->getCategories());
 print_r("\n\n");
 
 ?>
