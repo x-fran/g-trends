@@ -333,12 +333,12 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestOverTime($kWord, $category=0, $time='now 1-h', $property='')
+    public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
     {
         $timeInfo = explode('-', $time);
         $timeInfo[0] = strtolower($timeInfo[0]);
         $timeUnit = array_pop($timeInfo);
-        $timeInfo[] = strtoupper($timeUnit);
+        $timeInfo[] = $timeUnit;
         $time = implode('-', $timeInfo);
 
         $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
