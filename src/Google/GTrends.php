@@ -634,7 +634,7 @@ class GTrends
         }
 
         $client = new Http\Client();
-        $cookieJar = tempnam('/tmp','cookie');
+        $cookieJar = tempnam(sys_get_temp_dir(),'cookie');
         $client->setOptions([
             'adapter' => Http\Client\Adapter\Curl::class,
             'curloptions' => [
