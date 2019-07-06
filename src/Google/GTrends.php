@@ -24,16 +24,23 @@ class GTrends
         'geo' => 'US',
     ];
 
+    protected $proxy = false;
+
     /**
      * GTrends constructor.
      * @param array $options
+     * @param array $proxy
      * @throws \Exception
      */
-    public function __construct(array $options=[])
+    public function __construct(array $options=[], $proxy = false)
     {
         if ($options) {
 
             $this->setOptions($options);
+        }
+
+        if( is_array($proxy) ) {
+            $this->proxy = $proxy;
         }
     }
 
@@ -635,13 +642,20 @@ class GTrends
 
         $client = new Http\Client();
         $cookieJar = tempnam(sys_get_temp_dir(),'cookie');
-        $client->setOptions([
+        $clientOptions = [
             'adapter' => Http\Client\Adapter\Curl::class,
             'curloptions' => [
                 CURLOPT_COOKIEJAR => $cookieJar,
             ],
             'maxredirects' => 10,
-            'timeout' => 100]);
+            'timeout' => 100];
+
+        if($this->proxy)
+        {
+            $clientOptions['proxy'] = $this->proxy;
+        }
+
+        $client->setOptions($clientOptions);
         $client->setUri($uri);
         $client->setMethod(strtoupper($method));
 
