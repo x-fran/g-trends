@@ -355,7 +355,7 @@ class GTrends
 
             foreach ($widgetsArray as $widget) {
 
-                if ($widget['title'] == 'Interest over time') {
+                if ($widget['id'] == 'TIMESERIES') {
 
                     $interestOverTimePayload['hl'] = $this->options['hl'];
                     $interestOverTimePayload['tz'] = $this->options['tz'];
