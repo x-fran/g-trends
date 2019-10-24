@@ -142,7 +142,7 @@ class GTrends
             $results = [];
             foreach ($widgetsArray as $widget) {
 
-                if ($widget['id'] === 'RELATED_QUERIES') {
+                if (stripos($widget['id'], 'RELATED_QUERIES') !== false) {
 
                     $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'] ?? null;
                     $relatedPayload['hl'] = $this->options['hl'];
