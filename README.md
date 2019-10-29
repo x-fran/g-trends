@@ -34,7 +34,7 @@ If you use composer.phar local
 ```bash
 # Get your own copy of composer.phar
 $ curl -s https://getcomposer.org/installer | php -- --filename=composer
-$ composer require "x-fran/g-trends": "^1.0"
+$ composer require "x-fran/g-trends": "^2.0"
 ```
 
 
