@@ -556,6 +556,24 @@ class GTrends
     }
 
     /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @return array|bool
+     */
+    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+    {
+        try {
+            return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep);
+        } catch (\Exception $e) {
+            die($e->getMessage());
+        }
+    }
+
+
+    /**
      * @param $kWord
      *
      * @return array|bool
