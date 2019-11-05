@@ -430,28 +430,32 @@ class GTrends
         return false;
     }
 
-    /**
-     * @param array $keyWordList
-     * @param $resolution
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @param float $sleep
-     * @return array|bool
-     * @throws \Exception
-     */
-    private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+  /**
+   * @param array $keyWordList
+   * @param $resolution
+   * @param int $category
+   * @param string $time
+   * @param string $property
+   * @param float $sleep
+   * @param bool $disableTimeParsing
+   *
+   * @return array|bool
+   * @throws \Exception
+   */
+    private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         if (count($keyWordList) == 0 or count($keyWordList) > 5) {
 
             throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
-        $timeInfo = explode('-', $time);
-        $timeInfo[0] = strtolower($timeInfo[0]);
-        $timeUnit = array_pop($timeInfo);
-        $timeInfo[] = strtoupper($timeUnit);
-        $time = implode('-', $timeInfo);
+        if(!$disableTimeParsing) {
+          $timeInfo = explode('-', $time);
+          $timeInfo[0] = strtolower($timeInfo[0]);
+          $timeUnit = array_pop($timeInfo);
+          $timeInfo[] = strtoupper($timeUnit);
+          $time = implode('-', $timeInfo);
+        }
 
         $comparisonItem = [];
         foreach ($keyWordList as $kWord) {
@@ -504,69 +508,77 @@ class GTrends
         return false;
     }
 
-    /**
-     * @param array $keyWordList
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @param float $sleep
-     * @return array|bool
-     */
-    public function interestBySubregion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+  /**
+   * @param array $keyWordList
+   * @param int $category
+   * @param string $time
+   * @param string $property
+   * @param float $sleep
+   * @param bool $disableTimeParsing
+   *
+   * @return array|bool
+   */
+    public function interestBySubregion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
-            return $this->_interestBySubregion($keyWordList, 'SUBREGION', $category, $time, $property, $sleep);
+            return $this->_interestBySubregion($keyWordList, 'SUBREGION', $category, $time, $property, $sleep, $disableTimeParsing);
         } catch (\Exception $e) {
             die($e->getMessage());
         }
     }
 
-    /**
-     * @param array $keyWordList
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @param float $sleep
-     * @return array|bool
-     */
-    public function interestByCity(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+  /**
+   * @param array $keyWordList
+   * @param int $category
+   * @param string $time
+   * @param string $property
+   * @param float $sleep
+   * @param bool $disableTimeParsing
+   *
+   * @return array|bool
+   */
+    public function interestByCity(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
-            return $this->_interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep);
+            return $this->_interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep, $disableTimeParsing);
         } catch (\Exception $e) {
             die($e->getMessage());
         }
     }
 
-    /**
-     * @param array $keyWordList
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @param float $sleep
-     * @return array|bool
-     */
-    public function interestByMetro(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+  /**
+   * @param array $keyWordList
+   * @param int $category
+   * @param string $time
+   * @param string $property
+   * @param float $sleep
+   * @param bool $disableTimeParsing
+   *
+   * @return array|bool
+   */
+    public function interestByMetro(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
-            return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep);
+            return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep, $disableTimeParsing);
         } catch (\Exception $e) {
             die($e->getMessage());
         }
     }
 
-    /**
-     * @param array $keyWordList
-     * @param int $category
-     * @param string $time
-     * @param string $property
-     * @param float $sleep
-     * @return array|bool
-     */
-    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5)
+  /**
+   * @param array $keyWordList
+   * @param int $category
+   * @param string $time
+   * @param string $property
+   * @param float $sleep
+   * @param bool $disableTimeParsing
+   *
+   * @return array|bool
+   */
+    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
-            return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep);
+            return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep, $disableTimeParsing);
         } catch (\Exception $e) {
             die($e->getMessage());
         }
