@@ -333,21 +333,23 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function interestOverTime($kWord, $category=0, $time='now 1-H', $property='')
+    public function interestOverTime($kWord, $category=0, $time='now 4-H', $property='')
     {
-        $timeInfo = explode('-', $time);
-        $timeInfo[0] = strtolower($timeInfo[0]);
-        $timeUnit = array_pop($timeInfo);
-        $timeInfo[] = $timeUnit;
-        $time = implode('-', $timeInfo);
-
-        $comparisonItem[] = ['keyword' => $kWord, 'geo' => $this->options['geo'], 'time' => $time];
         $payload = [
             'hl' => $this->options['hl'],
             'tz' => $this->options['tz'],
-            'req' => Json\Json::encode(['comparisonItem' => $comparisonItem, 'category' => $category, 'property' => $property]),
+            'req' => Json\Json::encode([
+                'comparisonItem' => [
+                    [
+                        'keyword' => $kWord,
+                        'geo' => $this->options['geo'],
+                        'time' => $time,
+                    ],
+                ],
+                'category' => $category,
+                'property' => $property,
+            ]),
         ];
-
         $data = $this->_getData(self::GENERAL_ENDPOINT, 'GET', $payload);
         if ($data) {
 
@@ -705,7 +707,6 @@ class GTrends
         unlink($cookieJar);
 
         $statusCode = $client->getResponse()->getStatusCode();
-
         if ($statusCode == 200) {
 
             $headers = $client->getResponse()->getHeaders()->toArray();
