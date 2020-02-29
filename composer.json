@@ -29,9 +29,9 @@
   ],
   "require": {
     "php" : "^7.0",
-    "zendframework/zend-json": "^3.0",
-    "zendframework/zend-http": "^2.6",
-    "zendframework/zend-stdlib": "^3.1",
+    "laminas/laminas-json": "^3.0",
+    "laminas/laminas-http": "^2.6",
+    "laminas/laminas-stdlib": "^3.1",
     "ext-curl": "*",
     "ext-json": "*"
   },

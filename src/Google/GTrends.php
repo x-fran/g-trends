@@ -2,9 +2,9 @@
 
 namespace Google;
 
-use Zend\Json;
-use Zend\Http;
-use Zend\Stdlib;
+use Laminas\Json;
+use Laminas\Http;
+use Laminas\Stdlib;
 
 class GTrends
 {
