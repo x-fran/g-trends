@@ -24,12 +24,14 @@ class GTrends
         'geo' => 'US',
     ];
 
+    protected $curlOptions = [];
+
     /**
      * GTrends constructor.
      * @param array $options
      * @throws \Exception
      */
-    public function __construct(array $options=[])
+    public function __construct(array $options = [])
     {
         if ($options) {
 
@@ -37,17 +39,23 @@ class GTrends
         }
     }
 
+
+    public function setCurlOptions(array $options)
+    {
+        $this->curlOptions = $options;
+    }
+
     /**
      * @param int $ns
      * @return mixed
      */
-    public function getDailySearchTrends($ns=15)
+    public function getDailySearchTrends($ns = 15)
     {
-        $params =[
-            'hl'    => $this->options['hl'],
-            'tz'    => $this->options['tz'],
-            'geo'   => $this->options['geo'],
-            'ns'    => $ns,
+        $params = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'geo' => $this->options['geo'],
+            'ns' => $ns,
         ];
 
         try {
@@ -69,18 +77,18 @@ class GTrends
      * @param int $sort
      * @return mixed
      */
-    public function getRealTimeSearchTrends($cat='all', $fi=0, $fs=0, $ri=300, $rs=20, $sort=0)
+    public function getRealTimeSearchTrends($cat = 'all', $fi = 0, $fs = 0, $ri = 300, $rs = 20, $sort = 0)
     {
-        $params =[
-            'hl'    => $this->options['hl'],
-            'tz'    => $this->options['tz'],
-            'cat'   => $cat,
-            'fi'    => $fi,
-            'fs'    => $fs,
-            'geo'   => $this->options['geo'],
-            'ri'    => $ri,
-            'rs'    => $rs,
-            'sort'  => $sort,
+        $params = [
+            'hl' => $this->options['hl'],
+            'tz' => $this->options['tz'],
+            'cat' => $cat,
+            'fi' => $fi,
+            'fs' => $fs,
+            'geo' => $this->options['geo'],
+            'ri' => $ri,
+            'rs' => $rs,
+            'sort' => $sort,
         ];
 
         try {
@@ -102,7 +110,7 @@ class GTrends
      * @return array|bool|mixed
      * @throws \Exception
      */
-    public function getRelatedSearchQueries($keyWordList=null, $category=0, $time='today 12-m', $property='', $sleep=0.5)
+    public function getRelatedSearchQueries($keyWordList = null, $category = 0, $time = 'today 12-m', $property = '', $sleep = 0.5)
     {
         if (null !== $keyWordList && !is_array($keyWordList)) {
             $keyWordList = [$keyWordList];
@@ -161,7 +169,7 @@ class GTrends
                             $results[$kWord] = $queriesArray;
                         }
 
-                        if ($keyWordList and count($keyWordList)>1) {
+                        if ($keyWordList and count($keyWordList) > 1) {
 
                             sleep($sleep);
                         }
@@ -188,9 +196,9 @@ class GTrends
      * @return array|bool
      * @throws \Exception
      */
-    public function explore($keyWordList, $category=0, $time='today 12-m', $property='', array $widgetIds = ['*'], $sleep=0.5)
+    public function explore($keyWordList, $category = 0, $time = 'today 12-m', $property = '', array $widgetIds = ['*'], $sleep = 0.5)
     {
-        if (null !== $keyWordList && ! is_array($keyWordList)) {
+        if (null !== $keyWordList && !is_array($keyWordList)) {
             $keyWordList = [$keyWordList];
         }
 
@@ -222,7 +230,7 @@ class GTrends
 
         $data = $this->_getData(self::GENERAL_ENDPOINT, 'GET', $payload);
 
-        if (! $data) {
+        if (!$data) {
 
             return false;
         }
@@ -233,7 +241,7 @@ class GTrends
 
             $widgetEnabled = false !== array_search('*', $widgetIds) || in_array($widget['id'], $widgetIds, true);
 
-            if (! $widgetEnabled) {
+            if (!$widgetEnabled) {
 
                 continue;
             }
@@ -326,14 +334,14 @@ class GTrends
 
     /**
      * @param        $kWord
-     * @param int    $category
+     * @param int $category
      * @param string $time
      * @param string $property
      *
      * @return array|bool
      * @throws \Exception
      */
-    public function interestOverTime($kWord, $category=0, $time='now 4-H', $property='')
+    public function interestOverTime($kWord, $category = 0, $time = 'now 4-H', $property = '')
     {
         $payload = [
             'hl' => $this->options['hl'],
@@ -386,7 +394,7 @@ class GTrends
      * @param string $property
      * @return bool|mixed
      */
-    public function getRelatedTopics($kWord=null, $category=0, $time='today 12-m', $property='')
+    public function getRelatedTopics($kWord = null, $category = 0, $time = 'today 12-m', $property = '')
     {
         $timeInfo = explode('-', $time);
         $timeInfo[0] = strtolower($timeInfo[0]);
@@ -432,31 +440,31 @@ class GTrends
         return false;
     }
 
-  /**
-   * @param array $keyWordList
-   * @param $resolution
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   * @throws \Exception
-   */
-    private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
+    /**
+     * @param array $keyWordList
+     * @param $resolution
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @param bool $disableTimeParsing
+     *
+     * @return array|bool
+     * @throws \Exception
+     */
+    private function _interestBySubregion(array $keyWordList, $resolution, $category = 0, $time = 'now 1-h', $property = '', $sleep = 0.5, $disableTimeParsing = false)
     {
         if (count($keyWordList) == 0 or count($keyWordList) > 5) {
 
             throw new \Exception('Invalid number of items provided in keyWordList');
         }
 
-        if(!$disableTimeParsing) {
-          $timeInfo = explode('-', $time);
-          $timeInfo[0] = strtolower($timeInfo[0]);
-          $timeUnit = array_pop($timeInfo);
-          $timeInfo[] = strtoupper($timeUnit);
-          $time = implode('-', $timeInfo);
+        if (!$disableTimeParsing) {
+            $timeInfo = explode('-', $time);
+            $timeInfo[0] = strtolower($timeInfo[0]);
+            $timeUnit = array_pop($timeInfo);
+            $timeInfo[] = strtoupper($timeUnit);
+            $time = implode('-', $timeInfo);
         }
 
         $comparisonItem = [];
@@ -510,17 +518,17 @@ class GTrends
         return false;
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
-    public function interestBySubregion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @param bool $disableTimeParsing
+     *
+     * @return array|bool
+     */
+    public function interestBySubregion(array $keyWordList, $category = 0, $time = 'now 1-h', $property = '', $sleep = 0.5, $disableTimeParsing = false)
     {
         try {
             return $this->_interestBySubregion($keyWordList, 'SUBREGION', $category, $time, $property, $sleep, $disableTimeParsing);
@@ -529,17 +537,17 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
-    public function interestByCity(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @param bool $disableTimeParsing
+     *
+     * @return array|bool
+     */
+    public function interestByCity(array $keyWordList, $category = 0, $time = 'now 1-h', $property = '', $sleep = 0.5, $disableTimeParsing = false)
     {
         try {
             return $this->_interestBySubregion($keyWordList, 'CITY', $category, $time, $property, $sleep, $disableTimeParsing);
@@ -548,17 +556,17 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
-    public function interestByMetro(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @param bool $disableTimeParsing
+     *
+     * @return array|bool
+     */
+    public function interestByMetro(array $keyWordList, $category = 0, $time = 'now 1-h', $property = '', $sleep = 0.5, $disableTimeParsing = false)
     {
         try {
             return $this->_interestBySubregion($keyWordList, 'DMA', $category, $time, $property, $sleep, $disableTimeParsing);
@@ -567,17 +575,17 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
-    public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
+    /**
+     * @param array $keyWordList
+     * @param int $category
+     * @param string $time
+     * @param string $property
+     * @param float $sleep
+     * @param bool $disableTimeParsing
+     *
+     * @return array|bool
+     */
+    public function interestByRegion(array $keyWordList, $category = 0, $time = 'now 1-h', $property = '', $sleep = 0.5, $disableTimeParsing = false)
     {
         try {
             return $this->_interestBySubregion($keyWordList, 'REGION', $category, $time, $property, $sleep, $disableTimeParsing);
@@ -657,7 +665,7 @@ class GTrends
      * @param array $params
      * @return bool|string
      */
-    private function _getData($uri, $method, array $params=[])
+    private function _getData($uri, $method, array $params = [])
     {
         if ($method != 'GET' AND $method != 'POST') {
 
@@ -666,12 +674,12 @@ class GTrends
         }
 
         $client = new Http\Client();
-        $cookieJar = tempnam(sys_get_temp_dir(),'cookie');
+        $cookieJar = tempnam(sys_get_temp_dir(), 'cookie');
+        $this->setCurlOption(CURLOPT_COOKIEJAR, $cookieJar);
+        $curlOptions = $this->getCurlOptions();
         $client->setOptions([
             'adapter' => Http\Client\Adapter\Curl::class,
-            'curloptions' => [
-                CURLOPT_COOKIEJAR => $cookieJar,
-            ],
+            'curloptions' => $curlOptions,
             'maxredirects' => 10,
             'timeout' => 100]);
         $client->setUri($uri);
@@ -700,9 +708,7 @@ class GTrends
 
         $client->send();
         $client->setOptions([
-            'curloptions' => [
-                CURLOPT_COOKIEFILE => $cookieJar,
-            ]]);
+            'curloptions' => $curlOptions]);
         $client->send();
         unlink($cookieJar);
 
@@ -726,5 +732,15 @@ class GTrends
             }
         }
         return false;
+    }
+
+    private function getCurlOptions()
+    {
+        return $this->curlOptions;
+    }
+
+    private function setCurlOption($key, $value)
+    {
+        $this->curlOptions[$key] = $value;
     }
 }
