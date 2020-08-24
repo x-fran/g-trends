@@ -145,6 +145,7 @@ class GTrends
                 if (stripos($widget['id'], 'RELATED_QUERIES') !== false) {
 
                     $kWord = $widget['request']['restriction']['complexKeywordsRestriction']['keyword'][0]['value'] ?? null;
+                    $widget['request']['restriction']['geo'] = ($widget['request']['restriction']['geo']) ?: new \stdClass();
                     $relatedPayload['hl'] = $this->options['hl'];
                     $relatedPayload['tz'] = $this->options['tz'];
                     $relatedPayload['req'] = Json\Json::encode($widget['request']);
