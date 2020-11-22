@@ -75,7 +75,8 @@ Usage
 -----
 
 ### New instance of the class GTrends
-
+    use Google\GTrends;
+    
     # This options are by default if none provided
     $options = [
             'hl'  => 'en-US',
