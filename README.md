@@ -93,7 +93,18 @@ Usage
 
     # You can add up to 5 keywords
     print_r( $gt->relatedQueries(['Dublin', 'Madrid', 'Paris']));
-
+    
+### Realtime Search Trends
+    # Categories for Realtime Search Trends are a single char str:
+    # all : default
+    # b : business
+    # e : entertainment
+    # m : health/medical
+    # t : sci/tech
+    # s : sports
+    # h : top stories
+    print_r($gt->getRealTimeSearchTrends('all'));
+    
 ### Trending Searches
 
     # p54 is Google's tricky and wired code for Ireland
