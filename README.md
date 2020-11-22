@@ -105,7 +105,10 @@ Usage
     # m : health/medical
     # t : sci/tech
     # s : sports
-    # h : top stories    
+    # h : top stories
+
+### Daily Search Trends
+    # print_r($gt->getDailySearchTrends());
     
 ### Trending Searches
 
