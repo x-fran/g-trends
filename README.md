@@ -75,7 +75,8 @@ Usage
 -----
 
 ### New instance of the class GTrends
-
+    use Google\GTrends;
+    
     # This options are by default if none provided
     $options = [
             'hl'  => 'en-US',
@@ -92,14 +93,80 @@ Usage
 
     # You can add up to 5 keywords
     print_r( $gt->relatedQueries(['Dublin', 'Madrid', 'Paris']));
+    
+### Realtime Search Trends
+    # Categories for Realtime Search Trends are a single char str:
+    print_r($gt->getRealTimeSearchTrends('all'));
+    #
+    # Categories
+    # all : default
+    # b : business
+    # e : entertainment
+    # m : health/medical
+    # t : sci/tech
+    # s : sports
+    # h : top stories
 
+### Daily Search Trends
+    # print_r($gt->getDailySearchTrends());
+    
 ### Trending Searches
 
     # p54 is Google's tricky and wired code for Ireland
     print_r($gt->trendingSearches('p54', date('Ymd')));
+    #
+    # National Region Codes:
+    # IRELAND=p54
+    # UNITED_STATES=p1
+    # ARGENTINA=p30
+    # AUSTRALIA=p8
+    # AUSTRIA=p44
+    # BELGIUM=p41
+    # BRAZIL=p18
+    # CANADA=p13
+    # CHILE=p38
+    # COLOMBIA=p32
+    # CZECHIA=p43
+    # DENMARK=p49
+    # EGYPT=p29
+    # FINLAND=p50
+    # FRANCE=p16
+    # GERMANY=p15
+    # GREECE=p48
+    # HONG_KONG=p10
+    # HUNGARY=p45
+    # INDIA=p3
+    # INDONESIA=p19
+    # ISRAEL=p6
+    # ITALY=p27
+    # JAPAN=p4
+    # KENYA=p37
+    # MALAYSIA=p34
+    # MEXICO=p21
+    # NETHERLANDS=p17
+    # NEW_ZEALAND=p53
+    # NIGERIA=p52
+    # NORWAY=p51
+    # PHILIPPINES=p25
+    # POLAND=p31
+    # PORTUGAL=p47
+    # ROMANIA=p39
+    # RUSSIA=p14
+    # SAUDI_ARABIA=p36
+    # SINGAPORE=p5
+    # SOUTH_AFRICA=p40
+    # SOUTH_KOREA=p23
+    # SPAIN=p26
+    # SWEDEN=p42
+    # SWITZERLAND=p46
+    # TAIWAN=p12
+    # THAILAND=p33
+    # TURKEY=p24
+    # UKRAINE=p35
+    # UNITED_KINGDOM=p9
+    # VIETNAM=p28
 
 ### Interest by Subregion
-
     # You can add up to 5 keywords
     # Parameter $resolution (optional) for United States 'Subregion', 'Metro', 'City'
     # Parameter $resolution (optional) for the rest of the countries 'Subregion', 'City' only
