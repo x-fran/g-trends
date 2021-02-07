@@ -431,18 +431,18 @@ class GTrends
         return false;
     }
 
-  /**
-   * @param array $keyWordList
-   * @param $resolution
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   * @throws \Exception
-   */
+    /**
+    * @param array $keyWordList
+    * @param $resolution
+    * @param int $category
+    * @param string $time
+    * @param string $property
+    * @param float $sleep
+    * @param bool $disableTimeParsing
+    *
+    * @return array|bool
+    * @throws \Exception
+    */
     private function _interestBySubregion(array $keyWordList, $resolution, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         if (count($keyWordList) == 0 or count($keyWordList) > 5) {
@@ -509,16 +509,16 @@ class GTrends
         return false;
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
+    /**
+    * @param array $keyWordList
+    * @param int $category
+    * @param string $time
+    * @param string $property
+    * @param float $sleep
+    * @param bool $disableTimeParsing
+    *
+    * @return array|bool
+    */
     public function interestBySubregion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
@@ -528,16 +528,16 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
+    /**
+    * @param array $keyWordList
+    * @param int $category
+    * @param string $time
+    * @param string $property
+    * @param float $sleep
+    * @param bool $disableTimeParsing
+    *
+    * @return array|bool
+    */
     public function interestByCity(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
@@ -547,16 +547,16 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
+    /**
+    * @param array $keyWordList
+    * @param int $category
+    * @param string $time
+    * @param string $property
+    * @param float $sleep
+    * @param bool $disableTimeParsing
+    *
+    * @return array|bool
+    */
     public function interestByMetro(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
@@ -566,16 +566,16 @@ class GTrends
         }
     }
 
-  /**
-   * @param array $keyWordList
-   * @param int $category
-   * @param string $time
-   * @param string $property
-   * @param float $sleep
-   * @param bool $disableTimeParsing
-   *
-   * @return array|bool
-   */
+    /**
+    * @param array $keyWordList
+    * @param int $category
+    * @param string $time
+    * @param string $property
+    * @param float $sleep
+    * @param bool $disableTimeParsing
+    *
+    * @return array|bool
+    */
     public function interestByRegion(array $keyWordList, $category=0, $time='now 1-h', $property='', $sleep=0.5, $disableTimeParsing = false)
     {
         try {
@@ -584,7 +584,6 @@ class GTrends
             die($e->getMessage());
         }
     }
-
 
     /**
      * @param $kWord
