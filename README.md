@@ -92,7 +92,7 @@ Usage
 ### Related Queries
 
     # You can add up to 5 keywords
-    print_r( $gt->relatedQueries(['Dublin', 'Madrid', 'Paris']));
+    print_r( $gt->getRelatedSearchQueries(['Dublin', 'Madrid', 'Paris']));
     
 ### Realtime Search Trends
     # Categories for Realtime Search Trends are a single char str:
@@ -215,5 +215,3 @@ Credits
 
 * Some ideas pulled from General Mills's Google Trends API for Python
     - https://github.com/GeneralMills/pytrends
-    
-    
