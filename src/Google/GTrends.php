@@ -109,8 +109,6 @@ class GTrends
         }
 
         $timeInfo = explode('-', $time);
-        $timeInfo[0] = strtolower($timeInfo[0]);
-        $timeInfo[1] = strtolower($timeInfo[1]);
         $time = implode('-', $timeInfo);
 
         if (null === $keyWordList) {
