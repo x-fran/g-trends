@@ -257,7 +257,7 @@ class GTrends
 
                 $interestBySubregionPayload['hl'] = $this->options['hl'];
                 $interestBySubregionPayload['tz'] = $this->options['tz'];
-                $interestBySubregionPayload['req'] = str_replace('geo: []', 'geo: {}', Json\Json::encode($widget['request']));
+                $interestBySubregionPayload['req'] = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
                 $interestBySubregionPayload['token'] = $widget['token'];
 
                 $data = $this->_getData(self::INTEREST_BY_SUBREGION_ENDPOINT, 'GET', $interestBySubregionPayload);
