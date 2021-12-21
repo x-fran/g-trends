@@ -34,7 +34,7 @@ If you use composer.phar local
 ```bash
 # Get your own copy of composer.phar
 $ curl -s https://getcomposer.org/installer | php -- --filename=composer
-$ composer require "x-fran/g-trends": "^2.0"
+$ composer require "x-fran/g-trends": "^3.0"
 ```
 
 
@@ -79,24 +79,25 @@ Usage
     
     # This options are by default if none provided
     $options = [
-            'hl'  => 'en-US',
-            'tz'  => -60, # last hour
-            'geo' => 'IE',
-        ];
+        'hl' => 'en-US',
+        'tz' => 0,
+        'geo' => 'US',
+        'time' => 'all',
+        'category' => 0,
+    ];
     $gt = new GTrends($options);
 
 ### Interest Over Time
 
-    print_r($gt->interestOverTime('Dublin'));
+    $gt->getInterestOverTime('Dublin');
 
 ### Related Queries
 
-    # You can add up to 5 keywords
-    print_r( $gt->getRelatedSearchQueries(['Dublin', 'Madrid', 'Paris']));
+    $gt->getRelatedSearchQueries(['Donald Trump', 'Barack Obama']);
     
 ### Realtime Search Trends
     # Categories for Realtime Search Trends are a single char str:
-    print_r($gt->getRealTimeSearchTrends('all'));
+    $gt->getRealTimeSearchTrends('all');
     #
     # Categories
     # all : default
@@ -108,7 +109,7 @@ Usage
     # h : top stories
 
 ### Daily Search Trends
-    # print_r($gt->getDailySearchTrends());
+    $gt->getDailySearchTrends();
     
 ### Trending Searches
 
@@ -166,34 +167,27 @@ Usage
     # UNITED_KINGDOM=p9
     # VIETNAM=p28
 
-### Interest by Subregion
-    # You can add up to 5 keywords
-    # Parameter $resolution (optional) for United States 'Subregion', 'Metro', 'City'
-    # Parameter $resolution (optional) for the rest of the countries 'Subregion', 'City' only
-    print_r($gt->relatedQueries(['Dublin'], 'City'));
-
 ### Suggestions Autocomplete
 
-    print_r($gt->suggestionsAutocomplete('toys'));
+    $gt->suggestionsAutocomplete('Milwaukee');
 
-    
 ## Common API parameters
 
-$keyWordList (Array)
+$keyWords (Array)
 
 > Array of keywords (up to 5) to get data for
 
-$category (Integer)
+$options['category'] (Integer)
 
 > Search by category
 > Please view this [wiki page containing all available categories](https://github.com/pat310/google-trends-api/wiki/Google-Trends-Categories)
 
-$tz (Integer)
+$options['tz']  (Integer)
 
 > Timezone Offset
 > For example US CST is ```360```
 
-$time (String)
+$options['time'] (String)
 
 > Timezone Offset 
 
