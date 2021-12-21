@@ -191,7 +191,8 @@ $options['time'] (String)
 
 > Timezone Offset 
 
-> **```'now 1-H'```** would get data from last hour (default)  
+> **```'now 1-H'```** would get data from last hour  
+> **```'now 1-d'```** would get data from last day  
 > **```'today 2-d'```** would get data from today to 2 days ago  
 > **```'today 3-m'```** would get data from today to 3 months ago  
 > **```'today 4-y'```** would get data from today to 4 years ago  
