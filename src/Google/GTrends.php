@@ -33,14 +33,14 @@ class GTrends
     private const REAL_TIME_SEARCH_TRENDS_ENDPOINT = 'https://trends.google.com/trends/api/realtimetrends';
 
     private array $options = [
-        'hl' => 'en-US',
-        'tz' => 0,
-        'geo' => 'US',
-        'time' => 'all',
-        'category' => 0,
+        'hl'        => 'en-US',
+        'tz'        => 0,
+        'geo'       => 'US',
+        'time'      => 'all',
+        'category'  => 0,
     ];
 
-    public function __construct(array $options=[])
+    public function __construct(array $options = [])
     {
         if ($options) {
             $this->setOptions($options);
