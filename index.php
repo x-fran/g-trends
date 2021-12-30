@@ -2,14 +2,14 @@
 
 require 'vendor/autoload.php';
 
-use Google\GTrends;
+use XFran\GTrends\GTrends;
 
 $options = [
-    'hl' => 'en-US',
-    'tz' => 0,
-    'geo' => 'US',
-    'time' => 'all',
-    'category' => 0,
+    'hl'        => 'en-US',
+    'tz'        => 0,
+    'geo'       => 'US',
+    'time'      => 'all',
+    'category'  => 0,
 ];
 $gt = new GTrends($options);
 

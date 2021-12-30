@@ -1,8 +1,7 @@
 <?php
 
-namespace GoogleTest;
+namespace XFran\GTrends;
 
-use Google\GTrends;
 use PHPUnit\Framework\TestCase;
 
 class GTrendsTest extends TestCase

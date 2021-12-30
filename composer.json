@@ -52,12 +52,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Google\\": "src/Google"
+            "XFran\\GTrends\\": "src/GTrends"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GoogleTest\\": "test/GoogleTest"
+            "XFran\\GTrends\\": "test/GTrends"
         }
     }
 }
