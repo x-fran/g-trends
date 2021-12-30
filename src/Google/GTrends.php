@@ -49,7 +49,7 @@ class GTrends
 
     public function getRealTimeSearchTrends($cat = 'all', $fi = 0, $fs = 0, $ri = 300, $rs = 20, $sort = 0)
     {
-        $payload =[
+        $payload = [
             'hl'    => $this->options['hl'],
             'tz'    => $this->options['tz'],
             'cat'   => $cat,
@@ -68,7 +68,7 @@ class GTrends
 
     public function getDailySearchTrends($ns = 15)
     {
-        $payload =[
+        $payload = [
             'hl'    => $this->options['hl'],
             'tz'    => $this->options['tz'],
             'geo'   => $this->options['geo'],
