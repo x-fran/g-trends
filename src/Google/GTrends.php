@@ -22,15 +22,15 @@ use const CURLOPT_COOKIEJAR;
 
 class GTrends
 {
-    private const GENERAL_ENDPOINT = 'https://trends.google.com/trends/api/explore';
-    private const INTEREST_OVER_TIME_ENDPOINT = 'https://trends.google.com/trends/api/widgetdata/multiline';
-    private const RELATED_QUERIES_ENDPOINT = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
+    private const GENERAL_ENDPOINT                  = 'https://trends.google.com/trends/api/explore';
+    private const INTEREST_OVER_TIME_ENDPOINT       = 'https://trends.google.com/trends/api/widgetdata/multiline';
+    private const RELATED_QUERIES_ENDPOINT          = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
     private const SUGGESTIONS_AUTOCOMPLETE_ENDPOINT = 'https://trends.google.com/trends/api/autocomplete';
-    private const COMPARED_GEO_ENDPOINT = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
-    private const CATEGORIES_ENDPOINT = 'https://trends.google.com/trends/api/explore/pickers/category';
-    private const GEO_ENDPOINT = 'https://trends.google.com/trends/api/explore/pickers/geo';
-    private const DAILY_SEARCH_TRENDS_ENDPOINT = 'https://trends.google.com/trends/api/dailytrends';
-    private const REAL_TIME_SEARCH_TRENDS_ENDPOINT = 'https://trends.google.com/trends/api/realtimetrends';
+    private const COMPARED_GEO_ENDPOINT             = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    private const CATEGORIES_ENDPOINT               = 'https://trends.google.com/trends/api/explore/pickers/category';
+    private const GEO_ENDPOINT                      = 'https://trends.google.com/trends/api/explore/pickers/geo';
+    private const DAILY_SEARCH_TRENDS_ENDPOINT      = 'https://trends.google.com/trends/api/dailytrends';
+    private const REAL_TIME_SEARCH_TRENDS_ENDPOINT  = 'https://trends.google.com/trends/api/realtimetrends';
 
     private array $options = [
         'hl'        => 'en-US',
@@ -135,7 +135,7 @@ class GTrends
         return $this->explore($keyWords, ['GEO_MAP']);
     }
 
-    private function explore(array $keyWords = [], array $widgetIds = []): array
+    private function explore(array $keyWords, array $widgetIds): array
     {
         if (count($keyWords) > 5) {
             return [];
@@ -152,9 +152,9 @@ class GTrends
         }
 
         $payload = [
-            'hl' => $this->options['hl'],
-            'tz' => $this->options['tz'],
-            'req' => Json\Json::encode(
+            'hl'    => $this->options['hl'],
+            'tz'    => $this->options['tz'],
+            'req'   => Json\Json::encode(
                 ['comparisonItem' => $comparisonItem, 'category' => $this->options['category'], 'property' => '']
             ),
         ];
@@ -162,19 +162,15 @@ class GTrends
         $results = [];
         if ($data = $this->getData(self::GENERAL_ENDPOINT, $payload)) {
             $widgets = Json\Json::decode(trim(substr($data, 5)), Json\Json::TYPE_ARRAY)['widgets'];
-            if (!$widgetIds) {
-                return $widgets;
-            }
-
             foreach ($widgets as $widget) {
                 if (!array_key_exists('token', $widget)) {
                     continue;
                 }
 
-                $payload['hl'] = $this->options['hl'];
-                $payload['tz'] = $this->options['tz'];
-                $payload['req'] = Json\Json::encode($widget['request']);
-                $payload['token'] = $widget['token'];
+                $payload['hl']      = $this->options['hl'];
+                $payload['tz']      = $this->options['tz'];
+                $payload['req']     = Json\Json::encode($widget['request']);
+                $payload['token']   = $widget['token'];
 
                 unset(
                     $widget['showLegend'],
@@ -194,8 +190,8 @@ class GTrends
                     $widget['request']['includeLowSearchVolumeGeos'] = false;
                     $payload['req'] = Json\Json::encode($widget['request']);
                     if ($data = $this->getData(self::COMPARED_GEO_ENDPOINT, $payload)) {
-                        $results['GEO_MAP']['widget'] = $widget;
-                        $results['GEO_MAP']['data'] =
+                        $results['GEO_MAP']['widget']   = $widget;
+                        $results['GEO_MAP']['data']     =
                             Json\Json::decode(
                                 trim(substr($data, 5)),
                                 Json\Json::TYPE_ARRAY
@@ -209,7 +205,7 @@ class GTrends
                     && $data = $this->getData(self::RELATED_QUERIES_ENDPOINT, $payload)
                 ) {
                     $results['RELATED_QUERIES']['widget'][] = $widget;
-                    $results['RELATED_QUERIES']['data'][] =
+                    $results['RELATED_QUERIES']['data'][]   =
                         Json\Json::decode(
                             trim(substr($data, 5)),
                             Json\Json::TYPE_ARRAY
@@ -221,8 +217,8 @@ class GTrends
                     && stripos($widget['id'], 'RELATED_TOPICS') !== false
                     && $data = $this->getData(self::RELATED_QUERIES_ENDPOINT, $payload)
                 ) {
-                    $results['RELATED_TOPICS']['widget'] = $widget;
-                    $results['RELATED_TOPICS']['data'] =
+                    $results['RELATED_TOPICS']['widget']    = $widget;
+                    $results['RELATED_TOPICS']['data']      =
                         Json\Json::decode(
                             trim(substr($data, 5)),
                             Json\Json::TYPE_ARRAY
@@ -234,8 +230,8 @@ class GTrends
                     && stripos($widget['id'], 'TIMESERIES') !== false
                     && $data = $this->getData(self::INTEREST_OVER_TIME_ENDPOINT, $payload)
                 ) {
-                    $results['TIMESERIES']['widget'] = $widget;
-                    $results['TIMESERIES']['data'] =
+                    $results['TIMESERIES']['widget']    = $widget;
+                    $results['TIMESERIES']['data']      =
                         Json\Json::decode(
                             trim(substr($data, 5)),
                             Json\Json::TYPE_ARRAY
@@ -251,8 +247,8 @@ class GTrends
         $client = new Http\Client();
         $cookieJar = tempnam(sys_get_temp_dir(), 'cookie');
         $client->setOptions([
-            'adapter' => Http\Client\Adapter\Curl::class,
-            'curloptions' => [
+            'adapter'       => Http\Client\Adapter\Curl::class,
+            'curloptions'   => [
                 CURLOPT_COOKIEJAR => $cookieJar,
             ],
             'maxredirects' => 10,
@@ -274,8 +270,7 @@ class GTrends
         $client->send();
         unlink($cookieJar);
 
-        $statusCode = $client->getResponse()->getStatusCode();
-        if ($statusCode === 200) {
+        if ($client->getResponse()->getStatusCode() === 200) {
             return $client->getResponse()->getBody();
         }
         return '';
