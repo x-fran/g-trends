@@ -190,7 +190,6 @@ class GTrends
                     $widget['request']['resolution'] = $resolution;
                     $widget['request']['includeLowSearchVolumeGeos'] = false;
                     $payload['req'] = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
-                    var_dump($payload);
                     if ($data = $this->getData(self::COMPARED_GEO_ENDPOINT, $payload)) {
                         $results['GEO_MAP']['widget']   = $widget;
                         $results['GEO_MAP']['data']     =
