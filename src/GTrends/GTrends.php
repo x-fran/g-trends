@@ -130,12 +130,12 @@ class GTrends
         return $this->explore($keyWords, ['RELATED_QUERIES']);
     }
 
-    public function getComparedGeo(array $keyWords): array
+    public function getComparedGeo(array $keyWords, string $resolution = 'CITY'): array
     {
-        return $this->explore($keyWords, ['GEO_MAP']);
+        return $this->explore($keyWords, ['GEO_MAP'], $resolution);
     }
 
-    private function explore(array $keyWords, array $widgetIds): array
+    private function explore(array $keyWords, array $widgetIds, string $resolution = 'CITY'): array
     {
         if (count($keyWords) > 5) {
             return [];
@@ -158,6 +158,7 @@ class GTrends
                 ['comparisonItem' => $comparisonItem, 'category' => $this->options['category'], 'property' => '']
             ),
         ];
+
 
         $results = [];
         if ($data = $this->getData(self::GENERAL_ENDPOINT, $payload)) {
@@ -186,9 +187,10 @@ class GTrends
                 );
 
                 if ($widget['id'] === 'GEO_MAP' && in_array('GEO_MAP', $widgetIds, true)) {
-                    $widget['request']['resolution'] = 'CITY';
+                    $widget['request']['resolution'] = $resolution;
                     $widget['request']['includeLowSearchVolumeGeos'] = false;
-                    $payload['req'] = Json\Json::encode($widget['request']);
+                    $payload['req'] = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
+                    var_dump($payload);
                     if ($data = $this->getData(self::COMPARED_GEO_ENDPOINT, $payload)) {
                         $results['GEO_MAP']['widget']   = $widget;
                         $results['GEO_MAP']['data']     =
