@@ -171,6 +171,7 @@ class GTrends
                 $payload['hl']      = $this->options['hl'];
                 $payload['tz']      = $this->options['tz'];
                 $payload['req']     = Json\Json::encode($widget['request']);
+                $payload['req']     = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
                 $payload['token']   = $widget['token'];
 
                 unset(
@@ -189,7 +190,6 @@ class GTrends
                 if ($widget['id'] === 'GEO_MAP' && in_array('GEO_MAP', $widgetIds, true)) {
                     $widget['request']['resolution'] = $resolution;
                     $widget['request']['includeLowSearchVolumeGeos'] = false;
-                    $payload['req'] = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
                     if ($data = $this->getData(self::COMPARED_GEO_ENDPOINT, $payload)) {
                         $results['GEO_MAP']['widget']   = $widget;
                         $results['GEO_MAP']['data']     =
