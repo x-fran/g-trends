@@ -170,7 +170,6 @@ class GTrends
 
                 $payload['hl']      = $this->options['hl'];
                 $payload['tz']      = $this->options['tz'];
-                $payload['req']     = Json\Json::encode($widget['request']);
                 $payload['req']     = str_replace('"geo":[]', '"geo":{}', Json\Json::encode($widget['request']));
                 $payload['token']   = $widget['token'];
 
