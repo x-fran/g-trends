@@ -87,6 +87,19 @@ Usage
     ];
     $gt = new GTrends($options);
 
+## Set proxy to avoid google recaptcha
+
+    $gt = new GTrends($options);
+
+    $gt->setProxyConfigs([
+        'proxy_host' => 'your_proxy_host',
+        'proxy_port' => 8000,
+        'proxy_user' => 'your_proxy_user',
+        'proxy_pass' => 'your_proxy_pass',
+    ]);
+
+    $gt->setProxyConfigs(null); // clear proxy if you want
+
 ### Interest Over Time
 
     $gt->getInterestOverTime('Dublin');

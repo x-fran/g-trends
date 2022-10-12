@@ -40,6 +40,8 @@ class GTrends
         'category'  => 0,
     ];
 
+    private ?array $proxyConfigs = null;
+
     public function __construct(array $options = [])
     {
         if ($options) {
@@ -257,6 +259,10 @@ class GTrends
         $client->setUri($uri);
         $client->setMethod('GET');
 
+        if ($this->proxyConfigs) {
+            $client->setOptions($this->proxyConfigs);
+        }
+
         if ($payload) {
             $client->setParameterGet($payload);
         }
@@ -284,6 +290,12 @@ class GTrends
     public function setOptions(array $options): GTrends
     {
         $this->options = $options;
+        return $this;
+    }
+
+    public function setProxyConfigs(array $config): GTrends
+    {
+        $this->proxyConfigs = $config;
         return $this;
     }
 }
