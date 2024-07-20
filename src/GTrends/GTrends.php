@@ -22,15 +22,15 @@ use const CURLOPT_COOKIEJAR;
 
 class GTrends
 {
-    private const GENERAL_ENDPOINT                  = 'https://trends.google.com/trends/api/explore';
-    private const INTEREST_OVER_TIME_ENDPOINT       = 'https://trends.google.com/trends/api/widgetdata/multiline';
-    private const RELATED_QUERIES_ENDPOINT          = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
-    private const SUGGESTIONS_AUTOCOMPLETE_ENDPOINT = 'https://trends.google.com/trends/api/autocomplete';
-    private const COMPARED_GEO_ENDPOINT             = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
-    private const CATEGORIES_ENDPOINT               = 'https://trends.google.com/trends/api/explore/pickers/category';
-    private const GEO_ENDPOINT                      = 'https://trends.google.com/trends/api/explore/pickers/geo';
-    private const DAILY_SEARCH_TRENDS_ENDPOINT      = 'https://trends.google.com/trends/api/dailytrends';
-    private const REAL_TIME_SEARCH_TRENDS_ENDPOINT  = 'https://trends.google.com/trends/api/realtimetrends';
+    private const string GENERAL_ENDPOINT                  = 'https://trends.google.com/trends/api/explore';
+    private const string INTEREST_OVER_TIME_ENDPOINT       = 'https://trends.google.com/trends/api/widgetdata/multiline';
+    private const string RELATED_QUERIES_ENDPOINT          = 'https://trends.google.com/trends/api/widgetdata/relatedsearches';
+    private const string SUGGESTIONS_AUTOCOMPLETE_ENDPOINT = 'https://trends.google.com/trends/api/autocomplete';
+    private const string COMPARED_GEO_ENDPOINT             = 'https://trends.google.com/trends/api/widgetdata/comparedgeo';
+    private const string CATEGORIES_ENDPOINT               = 'https://trends.google.com/trends/api/explore/pickers/category';
+    private const string GEO_ENDPOINT                      = 'https://trends.google.com/trends/api/explore/pickers/geo';
+    private const string DAILY_SEARCH_TRENDS_ENDPOINT      = 'https://trends.google.com/trends/api/dailytrends';
+    private const string REAL_TIME_SEARCH_TRENDS_ENDPOINT  = 'https://trends.google.com/trends/api/realtimetrends';
 
     private array $options = [
         'hl'        => 'en-US',

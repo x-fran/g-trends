@@ -35,12 +35,12 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "~8.3.0",
         "ext-curl": "*",
         "ext-json": "*",
-        "laminas/laminas-http": "^2.15",
-        "laminas/laminas-json": "^3.3",
-        "laminas/laminas-stdlib": "^3.6"
+        "laminas/laminas-http": "^2.19.0",
+        "laminas/laminas-json": "^3.6.0",
+        "laminas/laminas-stdlib": "^3.19.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4",
