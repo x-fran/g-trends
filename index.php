@@ -4,14 +4,7 @@ require 'vendor/autoload.php';
 
 use XFran\GTrends\GTrends;
 
-$options = [
-    'hl'        => 'en-US',
-    'tz'        => 0,
-    'geo'       => 'US',
-    'time'      => 'all',
-    'category'  => 0,
-];
-$gt = new GTrends($options);
+$gt = new GTrends(hl: 'en-US', tz: 0, geo: 'US', time: 'all', category: 0);
 
 ?>
 
@@ -33,33 +26,27 @@ $gt = new GTrends($options);
 
         print_r('<pre>');
 
-        print_r("\n\n <h1>GTrends getRealTimeSearchTrends</h1>\n ");
-        print_r($gt->getRealTimeSearchTrends());
-        print_r("\n\n");
+        $demos = [
+            'getTrendingNow(4, GTrends::TRENDING_TOPICS Sports)' => fn () => $gt->getTrendingNow(4, 17),
+            'getTrendingNow(24)' => fn () => $gt->getTrendingNow(24),
+            'getTrendingNowRss' => fn () => $gt->getTrendingNowRss(),
+            'getSuggestions' => fn () => $gt->getSuggestions('Donald Trump'),
+            'getGeo' => fn () => $gt->getGeo(),
+            'getCategories' => fn () => $gt->getCategories(),
+            'explore (all widgets, one keyword)' => fn () => $gt->explore(['Donald Trump']),
+            'explore (two keywords)' => fn () => $gt->explore(['Donald Trump', 'Barack Obama']),
+            'getComparedGeo REGION' => fn () => $gt->getComparedGeo('Donald Trump', 'REGION'),
+        ];
 
-        print_r("\n\n <h1>GTrends getDailySearchTrends</h1>\n ");
-        print_r($gt->getDailySearchTrends());
-        print_r("\n\n");
-
-        print_r("\n\n <h1>GTrends getSuggestionsAutocomplete</h1>\n ");
-        print_r($gt->getSuggestionsAutocomplete('Donald Trump'));
-        print_r("\n\n");
-
-        print_r("\n\n <h1>GTrends getGeo</h1>\n ");
-        print_r($gt->getGeo());
-        print_r("\n\n");
-
-        print_r("\n\n <h1>GTrends getCategories</h1>\n ");
-        print_r($gt->getCategories());
-        print_r("\n\n");
-
-        print_r("\n\n <h1>GTrends getAllOneKeyWord</h1>\n ");
-        print_r($gt->getAllOneKeyWord('Donald Trump'));
-        print_r("\n\n");
-
-        print_r("\n\n <h1>GTrends getAllMultipleKeyWords</h1>\n ");
-        print_r($gt->getAllMultipleKeyWords(['Donald Trump', 'Barack Obama']));
-        print_r("\n\n");
+        foreach ($demos as $title => $demo) {
+            print_r("\n\n <h1>GTrends $title</h1>\n ");
+            try {
+                print_r($demo());
+            } catch (Throwable $e) {
+                print_r(get_class($e) . ': ' . $e->getMessage());
+            }
+            print_r("\n\n");
+        }
 
         ?>
         <script src=""></script>

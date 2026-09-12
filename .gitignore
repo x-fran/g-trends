@@ -1,5 +1,24 @@
-.idea
-vendor
-composer.phar
-phpunit.xml
-composer.lock
+# Dependencies
+/vendor/
+/composer.phar
+/composer.lock
+
+# Local overrides of the committed *.dist configs
+/phpunit.xml
+/phpstan.neon
+/.php-cs-fixer.php
+
+# Tool caches
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/.phpstan.cache/
+/.phpunit.cache/
+/.psalm/
+
+# IDE / editor
+/.idea/
+/.vscode/
+/.claude/settings.local.json
+.remember/
+
+CLAUDE.md

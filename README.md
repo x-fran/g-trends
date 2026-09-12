@@ -17,7 +17,17 @@ If this happens, feel free to contribute or open an issue.
 Requirements
 ------------
 
-Please see the [composer.json](composer.json) file.
+PHP 8.3 or higher. Please see the [composer.json](composer.json) file.
+
+Status (September 2026)
+-----------------------
+
+Google retired the `dailytrends` and `realtimetrends` endpoints in 2025. Since 5.0 this library
+reads Google's "Trending Now" page instead, which returns richer data (search volume, growth,
+related queries, topics). The explore-based methods (interest over time, related queries, related
+topics, compared geo) and the pickers (suggestions, categories, geo) still work.
+
+5.0 is a rewrite with a new API — see Usage below. It requires PHP 8.3+.
 
 
 Installation
@@ -34,7 +44,7 @@ If you use composer.phar local
 ```bash
 # Get your own copy of composer.phar
 $ curl -s https://getcomposer.org/installer | php -- --filename=composer
-$ composer require "x-fran/g-trends": "^3.0"
+$ composer require "x-fran/g-trends": "^5.0"
 ```
 
 
@@ -68,154 +78,112 @@ $ composer --no-dev install
 Demo
 ----
 
-To see a demo output from all methods (okay, functions) please open in your favorite browser the index.php 
+Open [index.php](index.php) in a browser (or `php -S localhost:8000`) to see the output of every method.
 
 
 Usage
 -----
 
-### New instance of the class GTrends
-    use Google\GTrends;
-    
-    # This options are by default if none provided
-    $options = [
-        'hl' => 'en-US',
-        'tz' => 0,
-        'geo' => 'US',
-        'time' => 'all',
-        'category' => 0,
-    ];
-    $gt = new GTrends($options);
+### Create a client
 
-## Set proxy to avoid google recaptcha
+```php
+use XFran\GTrends\GTrends;
 
-    $gt = new GTrends($options);
+// All arguments are optional; these are the defaults
+$gt = new GTrends(
+    hl: 'en-US',    // interface language
+    tz: 0,          // timezone offset in minutes, e.g. 360 for US CST
+    geo: 'US',      // country code, '' for worldwide
+    time: 'all',    // explore range: 'now 1-H', 'now 1-d', 'today 3-m', 'today 5-y', 'all'
+    category: 0,    // explore category id, see getCategories()
+);
 
-    $gt->setProxyConfigs([
-        'proxy_host' => 'your_proxy_host',
-        'proxy_port' => 8000,
-        'proxy_user' => 'your_proxy_user',
-        'proxy_pass' => 'your_proxy_pass',
-    ]);
+// Route through a proxy to avoid Google's captcha / rate limits
+$gt = new GTrends(geo: 'IE', proxy: [
+    'proxy_host' => 'your_proxy_host',
+    'proxy_port' => 8000,
+    'proxy_user' => 'your_proxy_user',
+    'proxy_pass' => 'your_proxy_pass',
+]);
+```
 
-    $gt->setProxyConfigs(null); // clear proxy if you want
+Every method throws `XFran\GTrends\GTrendsException` when Google answers with a non-200 status
+(HTTP 429 = rate limited) or an unexpected payload, and `InvalidArgumentException` for bad arguments.
 
-### Interest Over Time
+### Trending Now
 
-    $gt->getInterestOverTime('Dublin');
+Google retired the `dailytrends` and `realtimetrends` endpoints in 2025. `getTrendingNow()` reads
+the list behind [trends.google.com/trending](https://trends.google.com/trending) instead.
 
-### Related Queries
+```php
+// Everything trending in $geo over the last 4, 24, 48 or 168 hours
+$gt->getTrendingNow(24);
 
-    $gt->getRelatedSearchQueries(['Donald Trump', 'Barack Obama']);
-    
-### Realtime Search Trends
-    # Categories for Realtime Search Trends are a single char str:
-    $gt->getRealTimeSearchTrends('all');
-    #
-    # Categories
-    # all : default
-    # b : business
-    # e : entertainment
-    # m : health/medical
-    # t : sci/tech
-    # s : sports
-    # h : top stories
+// Restrict to a topic (ids and names in GTrends::TRENDING_TOPICS)
+$gt->getTrendingNow(4, 17); // Sports, last 4 hours
 
-### Daily Search Trends
-    $gt->getDailySearchTrends();
-    
-### Trending Searches
+// Each entry:
+[
+    'keyword'             => 'alabama vs kentucky',
+    'geo'                 => 'US',
+    'startedAt'           => 1789216200,   // unix timestamp
+    'searchVolume'        => 500000,
+    'volumeGrowthPercent' => 1000,
+    'relatedQueries'      => ['alabama football', 'kentucky football', ...],
+    'topics'              => [17],
+    'topicNames'          => ['Sports'],
+    'newsArticleIds'      => [4814762364, ...],
+]
 
-    # p54 is Google's tricky and wired code for Ireland
-    print_r($gt->trendingSearches('p54', date('Ymd')));
-    #
-    # National Region Codes:
-    # IRELAND=p54
-    # UNITED_STATES=p1
-    # ARGENTINA=p30
-    # AUSTRALIA=p8
-    # AUSTRIA=p44
-    # BELGIUM=p41
-    # BRAZIL=p18
-    # CANADA=p13
-    # CHILE=p38
-    # COLOMBIA=p32
-    # CZECHIA=p43
-    # DENMARK=p49
-    # EGYPT=p29
-    # FINLAND=p50
-    # FRANCE=p16
-    # GERMANY=p15
-    # GREECE=p48
-    # HONG_KONG=p10
-    # HUNGARY=p45
-    # INDIA=p3
-    # INDONESIA=p19
-    # ISRAEL=p6
-    # ITALY=p27
-    # JAPAN=p4
-    # KENYA=p37
-    # MALAYSIA=p34
-    # MEXICO=p21
-    # NETHERLANDS=p17
-    # NEW_ZEALAND=p53
-    # NIGERIA=p52
-    # NORWAY=p51
-    # PHILIPPINES=p25
-    # POLAND=p31
-    # PORTUGAL=p47
-    # ROMANIA=p39
-    # RUSSIA=p14
-    # SAUDI_ARABIA=p36
-    # SINGAPORE=p5
-    # SOUTH_AFRICA=p40
-    # SOUTH_KOREA=p23
-    # SPAIN=p26
-    # SWEDEN=p42
-    # SWITZERLAND=p46
-    # TAIWAN=p12
-    # THAILAND=p33
-    # TURKEY=p24
-    # UKRAINE=p35
-    # UNITED_KINGDOM=p9
-    # VIETNAM=p28
+// Google's public RSS feed for the same page: fewer fields, but it carries news headlines/urls
+// and it is the only trending feed Google exposes on purpose
+$gt->getTrendingNowRss();
+```
 
-### Suggestions Autocomplete
+### Explore (interest over time, related queries, related topics, compared geo)
 
-    $gt->suggestionsAutocomplete('Milwaukee');
+Up to 5 keywords per call.
 
-## Common API parameters
+```php
+$gt->getInterestOverTime('Dublin');                 // ['timelineData' => [...], 'averages' => [...]]
+$gt->getInterestOverTime(['Dublin', 'Cork']);
 
-$keyWords (Array)
+$gt->getRelatedQueries(['Dublin', 'Cork']);         // ['Dublin' => ['rankedList' => ...], 'Cork' => ...]
+$gt->getRelatedTopics('Dublin');                    // single keyword only (Google's limitation)
 
-> Array of keywords (up to 5) to get data for
+$gt->getComparedGeo('Dublin', 'REGION');            // resolution: COUNTRY (worldwide geo only), REGION, CITY
 
-$options['category'] (Integer)
+// Or fetch several widgets with a single explore round-trip
+$gt->explore(['Dublin', 'Cork'], [GTrends::TIMESERIES, GTrends::RELATED_QUERIES]);
+// => ['TIMESERIES' => [...], 'RELATED_QUERIES' => ['Dublin' => [...], 'Cork' => [...]]]
+```
 
-> Search by category
-> Please view this [wiki page containing all available categories](https://github.com/pat310/google-trends-api/wiki/Google-Trends-Categories)
+The widget payloads are returned exactly as Google sends them.
 
-$options['tz']  (Integer)
+### Pickers
 
-> Timezone Offset
-> For example US CST is ```360```
+```php
+$gt->getSuggestions('Milwaukee');   // [['mid' => '/m/0c1xr', 'title' => 'Milwaukee', 'type' => 'City in Wisconsin'], ...]
+$gt->getCategories();               // category tree for the `category` constructor argument
+$gt->getGeo();                      // geo tree for the `geo` constructor argument
+```
 
-$options['time'] (String)
 
-> Timezone Offset 
+Development
+-----------
 
-> **```'now 1-H'```** would get data from last hour  
-> **```'now 1-d'```** would get data from last day  
-> **```'today 2-d'```** would get data from today to 2 days ago  
-> **```'today 3-m'```** would get data from today to 3 months ago  
-> **```'today 4-y'```** would get data from today to 4 years ago  
+```bash
+composer install
+composer test        # PHPUnit — hits the live Google API, so it needs network access
+composer check       # php-cs-fixer, PHPStan (level 8), Psalm, PHPUnit
+```
 
 
 Caveats
 -------
 
-    - This is not an official or supported API
-    - Rate Limit is not publicly known, let me know if you have a consistent estimate.
+    - This is not an official or supported API; every endpoint is undocumented and can change without notice
+    - Rate limits are not publicly known. Google throttles by IP: sustained explore use returns HTTP 429 and the block can persist for a while. Use the `proxy` option if you hit it
 
 
 Credits

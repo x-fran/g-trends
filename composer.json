@@ -10,7 +10,7 @@
         }
     ],
     "homepage": "https://tarlabs.es/",
-    "keywords" : [
+    "keywords": [
         "google",
         "google-trends",
         "google-api",
@@ -35,20 +35,21 @@
         "sort-packages": true
     },
     "require": {
-        "php": "~8.3.0",
+        "php": "^8.3",
         "ext-curl": "*",
         "ext-json": "*",
-        "laminas/laminas-http": "^2.19.0",
-        "laminas/laminas-json": "^3.6.0",
-        "laminas/laminas-stdlib": "^3.19.0"
+        "ext-simplexml": "*",
+        "laminas/laminas-http": "^2.23",
+        "laminas/laminas-stdlib": "^3.21"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.4",
-        "phpmd/phpmd": "^2.11",
-        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^2",
+        "phpunit/phpunit": "^12.5",
         "roave/security-advisories": "dev-latest",
-        "squizlabs/php_codesniffer": "^3.6",
-        "vimeo/psalm": "^4.15"
+        "squizlabs/php_codesniffer": "^4.0",
+        "vimeo/psalm": "^6.17"
     },
     "autoload": {
         "psr-4": {
@@ -59,5 +60,19 @@
         "psr-4": {
             "XFran\\GTrends\\": "test/GTrends"
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix",
+        "stan": "phpstan analyse",
+        "psalm": "psalm",
+        "md": "phpmd src text cleancode,codesize,design",
+        "check": [
+            "@cs-check",
+            "@stan",
+            "@psalm",
+            "@test"
+        ]
     }
 }
